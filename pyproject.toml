@@ -62,9 +62,9 @@ all = [
 [project.urls]
 Homepage = "https://www.qeasy.cloud"
 Documentation = "https://github.com/qeasy/qdata-adapter-kd-cosmic#readme"
-Repository = "https://github.com/qeasy/qdata-adapter-kd-cosmic"
-"Bug Tracker" = "https://github.com/qeasy/qdata-adapter-kd-cosmic/issues"
-Changelog = "https://github.com/qeasy/qdata-adapter-kd-cosmic/blob/main/CHANGELOG.md"
+Repository = "https://github.com/vincent067/qdata-adapter-kd-cosmic"
+"Bug Tracker" = "https://github.com/vincent067/qdata-adapter-kd-cosmic/issues"
+Changelog = "https://github.com/vincent067/qdata-adapter-kd-cosmic/blob/main/CHANGELOG.md"
 
 # Entry points for adapter discovery
 [project.entry-points."qdata.adapters"]
