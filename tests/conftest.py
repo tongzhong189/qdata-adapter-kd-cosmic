@@ -17,7 +17,6 @@ import pytest
 from qdata_adapter import ConnectorContext
 
 # 尝试加载 python-dotenv
-# 如果未安装，使用 mock 实现
 try:
     from dotenv import load_dotenv
     load_dotenv()  # 加载 .env 文件
@@ -48,28 +47,17 @@ def save_http_recording(
     response_data: dict,
     interface: str = "standard",
 ) -> None:
-    """
-    保存 HTTP 请求/响应记录
-
-    Args:
-        test_name: 测试名称
-        request_data: 请求数据
-        response_data: 响应数据
-        interface: 接口类型
-    """
+    """保存 HTTP 请求/响应记录"""
     if not RECORD_TRAFFIC:
         return
 
-    # 创建记录目录
     recording_dir = TEST_DATA_DIR / "recordings" / datetime.now().strftime("%Y%m%d")
     recording_dir.mkdir(parents=True, exist_ok=True)
 
-    # 构建文件名
     timestamp = datetime.now().strftime("%H%M%S")
     filename = f"{interface}_{test_name}_{timestamp}.json"
     filepath = recording_dir / filename
 
-    # 保存记录
     record = {
         "timestamp": datetime.now().isoformat(),
         "test_name": test_name,
@@ -103,30 +91,19 @@ def test_config() -> dict[str, Any]:
 @pytest.fixture
 def standard_auth_config() -> dict[str, str]:
     """
-    standard 接口认证配置
+    standard 接口认证配置（金蝶云星空 Accesstoken 认证）
 
     优先从环境变量读取，使用默认值作为 fallback。
-    如需真实测试，请在 .env 文件中配置真实凭据。
     """
     prefix = ADAPTER_NAME.upper()
     return {
         "client_id": os.getenv(f"{prefix}_CLIENT_ID", "test-client-id"),
         "client_secret": os.getenv(f"{prefix}_CLIENT_SECRET", "test-client-secret"),
-        "token_url": os.getenv(f"{prefix}_TOKEN_URL", f"{BASE_URL}/oauth/token"),
-    }
-
-@pytest.fixture
-def enterprise_auth_config() -> dict[str, str]:
-    """
-    enterprise 接口认证配置
-
-    优先从环境变量读取，使用默认值作为 fallback。
-    """
-    prefix = ADAPTER_NAME.upper()
-    return {
-        "app_key": os.getenv(f"{prefix}_APP_KEY", "test-app-key"),
-        "app_secret": os.getenv(f"{prefix}_APP_SECRET", "test-app-secret"),
-        "customer_id": os.getenv(f"{prefix}_CUSTOMER_ID", "test-customer-id"),
+        "username": os.getenv(f"{prefix}_USERNAME", "test-username"),
+        "accountId": os.getenv(f"{prefix}_ACCOUNT_ID", "test-account-id"),
+        "language": os.getenv(f"{prefix}_LANGUAGE", "zh_CN"),
+        "x_acgw_identity": os.getenv(f"{prefix}_X_ACGW_IDENTITY", ""),
+        "refresh_token": os.getenv(f"{prefix}_REFRESH_TOKEN", "test-refresh-token"),
     }
 
 
@@ -153,18 +130,6 @@ def standard_context(standard_auth_config: dict) -> ConnectorContext:
         environment=ENVIRONMENT,
     )
 
-@pytest.fixture
-def enterprise_context(enterprise_auth_config: dict) -> ConnectorContext:
-    """enterprise 接口上下文 fixture"""
-    return ConnectorContext(
-        connector_id="test-connector-enterprise",
-        app_software_code=ADAPTER_NAME,
-        base_url=BASE_URL,
-        auth_config=enterprise_auth_config,
-        settings={"interface": "enterprise"},
-        environment=ENVIRONMENT,
-    )
-
 
 @pytest.fixture
 def mock_token_cache() -> Any:
@@ -184,35 +149,12 @@ def mock_token_cache() -> Any:
     return MockTokenCache()
 
 
-@pytest.fixture
-def http_recorder():
-    """HTTP 记录器 fixture"""
-    class HTTPRecorder:
-        def __init__(self):
-            self.records = []
-
-        def record(self, test_name: str, request: dict, response: dict, interface: str = "standard"):
-            self.records.append({
-                "test_name": test_name,
-                "request": request,
-                "response": response,
-                "interface": interface,
-            })
-            save_http_recording(test_name, request, response, interface)
-
-        def clear(self):
-            self.records.clear()
-
-    return HTTPRecorder()
-
-
 # =============================================================================
 # Pytest 钩子
 # =============================================================================
 
 def pytest_configure(config):
     """Pytest 配置钩子"""
-    # 添加自定义标记
     config.addinivalue_line(
         "markers", "real_api: 标记需要真实 API 的测试"
     )
@@ -223,6 +165,5 @@ def pytest_configure(config):
 
 def pytest_runtest_setup(item):
     """测试前设置"""
-    # 检查是否需要跳过真实 API 测试
     if "real_api" in item.keywords and not USE_REAL_API:
         pytest.skip("跳过真实 API 测试 (USE_REAL_API=false)")

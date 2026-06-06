@@ -7,7 +7,8 @@ BaseInterface 抽象基类
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any, AsyncIterator
+from collections.abc import AsyncIterator
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from qdata_adapter.client import HttpClient
@@ -37,7 +38,7 @@ class BaseInterface(ABC):
 
     interface_name: str = ""
 
-    def __init__(self, context: "ConnectorContext", http_client: "HttpClient") -> None:
+    def __init__(self, context: ConnectorContext, http_client: HttpClient) -> None:
         """
         初始化接口
 
