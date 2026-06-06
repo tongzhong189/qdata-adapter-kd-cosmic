@@ -1,0 +1,11 @@
+{
+  "code": "555401833695722752",
+  "name": "保存操作API（弹性域）",
+  "category": "操作API",
+  "description": "知识转载自金蝶AI苍穹·开放平台，作者：某个路易",
+  "method": "POST",
+  "request_params": [],
+  "response_params": [],
+  "error_codes": [],
+  "examples": []
+}

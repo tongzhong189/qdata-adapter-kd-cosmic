@@ -1,0 +1,79 @@
+{
+  "code": "543364912198830592",
+  "name": "认证方式-签名认证",
+  "category": "认证指南",
+  "description": "签名认证是目前第三方系统和金蝶AI苍穹安全性最高的认证方式，采用双向签名认证+加密/解密的模式，解决了第三方系统和金蝶AI苍穹安全高效的接口交互，支持接口参数防篡改，数据完整性和隐私安全性，可支持金融交易，海关等高安全性应用场景。",
+  "method": "POST",
+  "request_params": [
+    {
+      "field": "application/json",
+      "type": "string"
+    },
+    {
+      "field": "认证类型，”1“-AccessToken认证，”2“-摘要认证，”3“-JWT认证，”4“-基本认证，”5“-签名认证",
+      "type": "string"
+    },
+    {
+      "field": "应用身份标识，第三方应用启用后自动生成",
+      "type": "string"
+    },
+    {
+      "field": "签名认证策略卡片中的SecretKey",
+      "type": "string"
+    },
+    {
+      "field": "随机会话密钥，通过平台公钥加密后的字符串",
+      "type": "string"
+    },
+    {
+      "field": "通过随机会议加密，采用加密策略加密后的字符串",
+      "type": "string"
+    },
+    {
+      "field": "访问随机数，最好32位uuid，如果随机数已经访问过，则再次访问无效",
+      "type": "string"
+    },
+    {
+      "field": "当前时间，和服务器时间相差10分钟就为无效请求，目前格式为yyyy-MM-dd HH:mm:ss，以后为时间戳",
+      "type": "string"
+    },
+    {
+      "field": "用SHA-256算法和认证密钥key对body参数和timestamp，signatureNonce进行摘要后的结果。公式：HMACSHA256（body参数+timestamp+signatureNonce，key）",
+      "type": "string"
+    },
+    {
+      "field": "数据中心ID",
+      "type": "string"
+    },
+    {
+      "field": "第三方应用ID",
+      "type": "string"
+    },
+    {
+      "field": "随机会话密钥，通过平台私钥加密后的字符串",
+      "type": "string"
+    },
+    {
+      "field": "通过随机会议加密，采用加密策略加密后的字符串",
+      "type": "string"
+    },
+    {
+      "field": "访问随机数，最好32位uuid，如果随机数已经访问过，则再次访问无效",
+      "type": "string"
+    },
+    {
+      "field": "当前时间，和服务器时间相差10分钟就为无效请求，目前格式为yyyy-MM-dd HH:mm:ss，以后为时间戳",
+      "type": "string"
+    },
+    {
+      "field": "用SHA-256算法和认证密钥key对body参数和timestamp， signatureNonce进行摘要后的结果。公式：HMACSHA256（body参数+timestamp+signatureNonce，key）",
+      "type": "string"
+    }
+  ],
+  "response_params": [],
+  "error_codes": [],
+  "examples": [
+    "1、配置签名认证相关参数；\n2、编写签名认证相关签名和加密/解密代码；\n3、编写业务接口处理代码；\n4、调试接口。",
+    "URL: http://{{localhost}}/kapi/v2/kdtest/open/openapi_unittest/findOrders\n\n请求方式：POST\n\n请求Header参数：\nContent-Type=application/json\nx-acgw-Identity={第三方应用身份标识}\nOpenApiAuth=5\nopenApiSign=UlZqZWxjZWZJRk5BbjZnMGF1jYWZZeFNPOUxwND06MTMzMTIwNDQ0NTk5NTc5NDQzMg==\n\n请求Body参数：\n\n{\n    \"dgtlEnvlp\": \"6F56001A8479097414D4F3137C25D0A72EA7D3D9D089AF0498CC1CF9CD90C8D583C0135049B64764AEE26C30DA1C1295F5F21C80F3DC901293A8C64624B66399B95255E8932C3D8F9E65F1FE6AD091948DB8BED453E80B8A4CF2E32E0227E9AEC96B3BE5B57C457589B7578EBADC6EBB4F5ABDD98B6614E3C741AA691FF0259D\",\n    \"encryptData\": \"AAAADKPWJMKRjHiwR67fLSUUfkwcZo0XJQeSEGExBDp1jDCqGl+FB8GNLUQXzLsIdP6kbkyCNTPpYLdu4x5f7EJgPbzJ7fLWN+Cs44OJMKeHapFOgKM=\",\n    \"signature\": \"712f5d468ecb13c8b8fc24118d23bc541a93d2f3d6b5f998af8952bbc862387c\",\n    \"signatureNonce\": \"0f8cf008-9095-4ce7-9600-e28e564aaae7\",\n    \"timestamp\": \"2022-10-19 15:26:33\"\n}\n\n请求结果：\n\n{\n    \"accountId\": \"1355633519610561536\",\n    \"authType\": \"5\",\n    \"data\": {\n        \"data\": null,\n        \"errorCode\": \"0\",\n        \"message\": null,\n        \"status\": true\n    },\n    \"dgtlEnvlp\": \"0EEFE62AA75CF03638568D30AC5CC165637529632E0E2A9CB1C77E28645D8DD7555DBB52EA78758798A366D375E1E46D314C5B7D41F461757793FCECEE948D41428F69D1A304110FE469DCA6BA032DA599F244F11408915BB76EE7275CE3595578E1FA6E4CF0A96FE3B6642631D2B0DCD5090F9C762D16032138AD4C198271AF\",\n    \"encryptData\": \"AAAADIULnyBUVP/qDzgdateRk6LdD7puKpNdXSNYEHtnsYxZUwucf5Jc8MrbEMDvqV8dIr/uKH3jTvsfQXMZuzI88JaX+s9KfxMYgL5382dDPigkaASyCbtRJkm4LTyIkd96JmJAzeZQYOSsk9OFfJFfpT0rFbpNRHcs5t5sPfB7iI91UtjRCg==\",\n    \"signature\": \"1af6b267b0c74801996cb7a6b621eb44a6a95fc496128373ed3f8bfd5d2dca00\",\n    \"signatureNonce\": \"5bfb355d-6966-4289-935a-17d64fa86994\",\n    \"thirdId\": \"1520516744903424000\",\n    \"timestamp\": \"2022-10-19 15:26:34\",\n    \"url\": \"/kapi/v2/kdtest/open/openapi_unittest/findOrders\"\n}"
+  ]
+}

@@ -1,0 +1,84 @@
+<p label="二级标题" id="html-anchor-list5-1706063152300" class=" html-anchor-list5-1706063152300" style="font-size: 18px; font-weight: bold; line-height: 42px;">一、摘要认证介绍</p><p label="正文" style="">        摘要认证使用摘要代替token的传输，并且采用MD5、SHA之类的不可逆哈希算法对参数摘要。</p><p label="正文" style="">        客户端第一次请求时，通过服务端生成的随机数将放在响应头中发送回客户端，然后客户端通过指定的加密算法将随机数、时间戳和其他用户信息生成摘要。后续客户端在调用请求时，将摘要放在请求头中再次发送给服务器。服务器拿到摘要后，根据请求信息从数据库取出客户端密码进行同样的计算并与得出的摘要进行对比，匹配则身份验证通过。<br/></p><p style=""><br/></p><p class="kd-image-content" style=""><img src="https://vip.kingdee.com/download/0100aaebe83917ee4f48951b8ace48eab010.png" alt="上传图片"/></p><p style=""><br/></p><p style=""><br/></p><h3 label="二级标题" class="second-title" style=""><span style="font-weight: 700;">二、认证<a class="add-link-key-word" href="https://www.kingdee.com/products/cosmic_process_service.html?utm_source=shequ" target="_blank" style="color: currentcolor;">流程</a>：</span></h3><p style="">        第三方系统直接调用金蝶AI的OpenAPI的时候，需要经历2步：</p><ol class=" list-paddingleft-2" style="list-style-type: decimal;"><li><p style="">  生成第三方appId和第三方app的摘要认证加密秘钥；</p></li><li><p style="">  API调用过程中加入验证信息。</p></li></ol><p style="">        摘要签名不需要像AccessToken认证方式一样分两步获取，可以通过java工具类指定默认算法如sha-256直接生成签名；<span style="">生成摘要后，后续只需要在请求的参数中带上签名信息就可以完成服务调用。</span></p><ul class=" list-paddingleft-2" style="list-style-type: disc;"><li><p style="">POST方式：提交的API内容，所有的验证内容在请求体中；</p></li><li><p style="">GET方式：提交的API内容，所有的验证内容在url的参数中。</p></li></ul><p style=""><span style="color: rgb(227, 108, 9);">    注：<span style="font-weight: 700;">生成摘要后，后续只需要在请求的参数中带上签名信息就可以完成API调用。摘要认证详细方法和demo见附件。</span>。</span></p><p style=""><span style="color: rgb(227, 108, 9);"><br/></span></p><h3 label="二级标题" class="second-title" style="">三、调用接口示例：</h3><p style=""><span style="font-weight: 700;">1）GET API 实例</span></p><p style=""><span style="font-weight: 700;"><br/></span></p><p style=""><span style="font-weight: 700;">请求示例</span></p><pre class="ueditor-code-area brush:js;toolbar:false" style="">URL：http://{{localhost}}/kapi/sys/isc_demo_basedata_1/query?x-acgw-identity={第三方应用身份标识}&appId=TEST&timestamp=2021-08-18 14:19:08&signatureNonce=iksiertoidkwek;oitdwudysletwsuej&signature=32beeebfc277817a80b0
+1d5787242c51ca5295f5edcf2eb9371ff367f8b487a5&parameters=select&user=17299999999&usertype=Mobile&accountId=1173910536060928000
+
+
+请求Header参数：
+Content-Type=application/json
+
+请求结果：
+{
+   "success": "true",
+   "data": {
+       "count": 1,
+       "header": [
+           {
+               "name": "name",
+               "caption": "名称",
+               "type": "String"
+           },
+           {
+               "name": "number",
+               "caption": "编码",
+               "type": "String"
+           }
+       ],
+       "rows": [
+           [
+               "123asd",
+               "123asd"
+           ]
+       ]
+   }
+}</pre><p style=""><br/></p><p style=""><span style="font-weight: 700;"><br/></span></p><p style=""><span style="font-weight: 700;">请求参数</span></p><table width="96%"><tbody style=""><tr class="firstRow" style=""><td width="89" style=""><p style="text-align: inherit;"><span style="font-weight: 700;">请求参数</span></p></td><td width="89" style=""><p style="text-align: inherit;"><span style="font-weight: 700;">必传</span></p></td><td colspan="1" rowspan="1" valign="null" width="111" style=""><p style="text-align: inherit;"><span style="font-weight: 700;">类型</span></p></td><td width="405" style=""><p style="text-align: inherit;"><span style="font-weight: 700;">字段说明</span></p></td></tr><tr style=""><td width="89" style=""><p style="text-align: inherit;">x-acgw-identity</p></td><td width="89" style=""><p style="text-align: inherit;">是</p></td><td colspan="1" rowspan="1" valign="null" width="111" style=""><p style="text-align: inherit;">string</p></td><td width="405" style=""><p style="text-align: inherit;">第三方应用系统身份标识<span style="">（认证凭证面板获取）</span></p></td></tr><tr style=""><td width="89" style=""><p style="text-align: inherit;">appId</p></td><td width="89" style=""><p style="text-align: inherit;">是</p></td><td colspan="1" rowspan="1" valign="null" width="111" style=""><p style="text-align: inherit;">string</p></td><td width="405" style=""><p style="text-align: inherit;">第三方appId<span style="">（认证凭证面板获取）</span></p></td></tr><tr style=""><td width="89" style=""><p style="text-align: inherit;">timestamp</p></td><td width="89" style=""><p style="text-align: inherit;">是</p></td><td colspan="1" rowspan="1" valign="null" width="111" style=""><p style="text-align: inherit;">string</p></td><td width="405" style=""><p style="text-align: inherit;">当前时间，和服务器时间相差10分钟就为无效请求，目前格式为yyyy-MM-dd HH:mm:ss，以后为时间戳</p></td></tr><tr style=""><td width="89" style=""><p style="text-align: inherit;">signatureNonce</p></td><td width="89" style=""><p style="text-align: inherit;">是</p></td><td colspan="1" rowspan="1" valign="null" width="111" style=""><p style="text-align: inherit;">string</p></td><td width="405" style=""><p style="text-align: inherit;">访问随机数，最好32位uuid，如果随机数已经访问过，则再次访问无效</p></td></tr><tr style=""><td width="89" style=""><p style="text-align: inherit;">signature</p></td><td width="89" style=""><p style="text-align: inherit;">是</p></td><td colspan="1" rowspan="1" valign="null" width="111" style=""><p style="text-align: inherit;">string</p></td><td width="405" style=""><p style="text-align: inherit;">用SHA-256算法和摘要加密认证密钥key对query的拼接参数(如：tesetA=tt&testB=tt2+timestamp+ signatureNonce进行摘要后的结果。公式：HMACSHA256（query的拼接参数+timestamp+signatureNonce，key）</p></td></tr><tr style=""><td width="89" style=""><p style="text-align: inherit;">parameters</p></td><td width="89" style=""><p style="text-align: inherit;">是</p></td><td colspan="1" rowspan="1" valign="null" width="111" style=""><p style="text-align: inherit;">string</p></td><td width="405" style=""><p style="text-align: inherit;">参与摘要的参数列表，多个参数用“,”隔开</p></td></tr><tr style=""><td width="89" style=""><p style="text-align: inherit;">user</p></td><td width="89" style=""><p style="text-align: inherit;">是</p></td><td colspan="1" rowspan="1" valign="null" width="111" style=""><p style="text-align: inherit;">string</p></td><td width="405" style=""><p style="text-align: inherit;"><span style="color: rgb(61, 70, 74); text-align: justify;">金蝶云或云之家的用户名</span></p></td></tr><tr style=""><td width="89" style=""><p style="text-align: inherit;">usertype</p></td><td width="89" style=""><p style="text-align: inherit;">否</p></td><td colspan="1" rowspan="1" valign="null" width="111" style=""><p style="text-align: inherit;">string</p></td><td width="405" style=""><p style="text-align: inherit;">用户类型：Mobile： 标识为手机，默认为手机</p><p style="text-align: inherit;">Email：标识为email</p><p style="text-align: inherit;">UserName：标识为用户名</p></td></tr></tbody></table><p style="">如果没有参数，也要加一个默认参数 test=tt来完成认证数据。</p><p style=""><br/></p><p style=""><span style="font-weight: 700;">2）POST API 实例</span></p><p style=""><span style="font-weight: 700;"><br/></span></p><p style=""><span style="font-weight: 700;">请求示例</span></p><pre class="ueditor-code-area brush:js;toolbar:false" style="">URL：http://{{localhost}}/kapi/sys/pm_purorderbill/save
+
+请求Header参数：
+  x-acgw-identity={第三方应用身份标识}
+  appId=test
+  signature=32beeebfc277817a80b01d5787242c51ca5295f5edcf2eb9371ff367f8b487a5
+  timestamp=2020-08-19 15:31:59
+  signatureNonce=iksiertoidkwek;oitdwudysletwsues
+  user=130****2580
+  usertype= Mobile
+  accountId=1173910536060928000 
+
+请求Body参数：
+{
+    "data": {
+        "number": "cugQ",
+        "name": "cugQ",
+        "alias_name": "cugQ"
+    }
+}
+
+请求结果：
+{
+   "data": {
+       "success": true,
+       "needSign": false,
+       "needWfAssignPersons": false,
+       "cancelWriteLog": true,
+       "showMessage": true,
+       "billCount": 1,
+       "successPkIds": [
+           1226640481962735616
+       ],
+       "billNos": {
+           "1226640481962735616": "cugQ"
+       },
+       "validateResult": {
+           "validateErrors": [],
+           "success": true,
+           "message": "",
+           "errorPkIds": [],
+           "errorDataIndexs": []
+       },
+       "runSecond": 0,
+       "allErrorOrValidateInfo": [],
+       "allErrorInfo": []
+   },
+   "success": true,
+   "errorCode": "success",
+   "message": null
+}</pre><p style=""><br/></p><p style=""><span style="font-weight: 700;">请求参数</span></p><p style=""><span style="font-weight: 700;"><br/></span></p><table width="96%"><tbody style=""><tr class="firstRow" style=""><td width="128" style=""><p style="text-align: inherit;"><span style="font-weight: 700;">请求参数</span></p></td><td width="128" style=""><p style="text-align: inherit;"><span style="font-weight: 700;">必传</span></p></td><td colspan="1" rowspan="1" valign="null" width="60" style=""><p style="text-align: inherit;"><span style="font-weight: 700;">类型</span></p></td><td width="372" style=""><p style="text-align: inherit;"><span style="font-weight: 700;">字段说明</span></p></td></tr><tr><td width="89"><p style="text-align: inherit;">x-acgw-identity</p></td><td width="89"><p style="text-align: inherit;">是</p></td><td width="111" valign="null"><p style="text-align: inherit;">string</p></td><td width="405"><p style="text-align: inherit;">第三方应用系统身份标识（认证凭证面板获取）</p></td></tr><tr style=""><td width="128" style=""><p style="text-align: inherit;">appId</p></td><td width="128" style=""><p style="text-align: inherit;">是</p></td><td colspan="1" rowspan="1" valign="null" width="60" style=""><p style="text-align: inherit;">string</p></td><td width="372" style=""><p style="text-align: inherit;">第三方appId<span style="">（认证凭证面板获取）</span></p></td></tr><tr style=""><td width="128" style=""><p style="text-align: inherit;">timestamp</p></td><td width="128" style=""><p style="text-align: inherit;">是</p></td><td colspan="1" rowspan="1" valign="null" width="60" style=""><p style="text-align: inherit;">string</p></td><td width="372" style=""><p style="text-align: inherit;">当前时间，和服务器时间相差10分钟就为无效请求，目前格式为yyyy-mm-dd hh:mm:ss，以后为时间戳</p></td></tr><tr style=""><td width="128" style=""><p style="text-align: inherit;">signatureNonce</p></td><td width="128" style=""><p style="text-align: inherit;">是</p></td><td colspan="1" rowspan="1" valign="null" width="60" style=""><p style="text-align: inherit;">string</p></td><td width="372" style=""><p style="text-align: inherit;">访问随机数，最好32位uuid，如果随机数已经访问过，则再次访问无效</p></td></tr><tr style=""><td width="128" style=""><p style="text-align: inherit;">signature</p></td><td width="128" style=""><p style="text-align: inherit;">是</p></td><td colspan="1" rowspan="1" valign="null" width="60" style=""><p style="text-align: inherit;">string</p></td><td width="372" style=""><p style="text-align: inherit;">用SHA-256算法和摘要加密认证密钥key对body+timestamp+ signatureNonce进行摘要后的结果。公式：HMACSHA256（body+timestamp+signatureNonce，key）</p></td></tr><tr style=""><td width="128" style=""><p style="text-align: inherit;">user</p></td><td width="128" style=""><p style="text-align: inherit;">是</p></td><td colspan="1" rowspan="1" valign="null" width="60" style=""><p style="text-align: inherit;">string</p></td><td width="372" style=""><p style="text-align: inherit;"><span style="color: rgb(61, 70, 74); text-align: justify;">金蝶云或云之家的用户名</span></p></td></tr><tr style=""><td width="128" style=""><p style="text-align: inherit;">usertype</p></td><td width="128" style=""><p style="text-align: inherit;">否</p></td><td colspan="1" rowspan="1" valign="null" width="60" style=""><p style="text-align: inherit;">string</p></td><td width="372" style=""><p style="text-align: inherit;">用户类型：Mobile： 标识为手机，默认为手机</p><p style="text-align: inherit;">Email：标识为email</p><p style="text-align: inherit;">UserName：标识为用户名</p></td></tr></tbody></table><p style="">如果内容为空，则在body中输入固定值，如：</p><pre class="ueditor-code-area brush:js;toolbar:false" style="">{    
+    "testName": "test"                                           
+}</pre><h2 label="一级标题" class="first-title html-anchor-list7-1684812340392 html-anchor-list9-1706063152300" id="html-anchor-list9-1706063152300" style="">四、更多资讯</h2><p style="text-align: justify;">请关注<a href="https://vip.kingdee.com/article/524541674677257984" target="_blank">开放平台新特性公告</a>的最新特性</p><p style="text-align: justify;"><a href="https://vip.kingdee.com/article/524631518447411968" target="_blank">金蝶AIOpenAPI开发认证指南</a></p><p><br/></p><p><br/></p><span class="kd-attachment-content" contenteditable="false" id="" vid="605703489519513600"><span class="name" contenteditable="false">摘要认证开发demo.rar</span></span>

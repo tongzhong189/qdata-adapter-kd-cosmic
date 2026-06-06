@@ -1,0 +1,11 @@
+{
+  "code": "555395543061704960",
+  "name": "操作API敏感数据脱敏",
+  "category": "操作API",
+  "description": "知识转载自金蝶AI苍穹·开放平台，作者：某个路易",
+  "method": "POST",
+  "request_params": [],
+  "response_params": [],
+  "error_codes": [],
+  "examples": []
+}

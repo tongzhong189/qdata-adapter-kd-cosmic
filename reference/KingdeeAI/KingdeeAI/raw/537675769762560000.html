@@ -1,0 +1,150 @@
+<h2 label="一级标题" class="first-title html-anchor-list0-1695016380969 html-anchor-list0-1705999769910" id="html-anchor-list0-1695016380969" style="">1 简介      </h2><p style="color: rgb(0, 0, 0);">      Token认证是指客户端登陆完成之后，服务端会生成一个有时效性的token返回给客户端，以后每次请求客户端都需要带上token。它可以当作URL参数或在请求头中发送，如“http://demo.com/users?accessToken=xxxxxx”，服务端以此来控制身份。当token过期后，服务端会销毁token，客户端需要重新请求获得token。</p><h2 label="一级标题" class="first-title html-anchor-list4-1695016380969" id="html-anchor-list4-1695016380969" style=""><br/></h2><h2 label="一级标题" class="first-title html-anchor-list4-1695016380969 html-anchor-list1-1705999769910" id="html-anchor-list4-1695016380969" style="">1.1  AccessToken认证流程</h2><p style="color: rgb(0, 0, 0);">1、<span class="md-plain md-expand" style="color: rgb(51, 51, 51);">在</span><span class="md-meta-i-c  md-link" style="color: rgb(51, 51, 51);"><a href="https://www.kingdee.com/products/galaxy.html" style="color: rgb(65, 131, 196);" target="_blank"><span class="md-plain" style="">金蝶AI</span></a></span><span class="md-plain" style="color: rgb(51, 51, 51);">OpenAPI（开放平台）注册第三方应用，注册后会生成appId（系统编码）、</span><span class="md-html-inline" style="color: rgb(51, 51, 51);"><span style="color:#E66327"><span class="md-pair-s " style=""><strong style="color: inherit;">x-acgw-<strong style="">identity</strong>（系统身份标识）</strong></span></span></span><span class="md-plain md-expand" style="color: rgb(51, 51, 51);">；</span></p><p style="color: rgb(0, 0, 0);">2、访问策略选择AccessToken认证，手动维护认证密钥（<span style="color: rgb(0, 0, 0);">appSecret</span>），<span style="color: rgb(227, 108, 9);">注意：点击确认后需保存配置才能生效</span>；</p><p style="color: rgb(0, 0, 0);">2、请求参数中输入appId和appSecret，通过客户端发送请求给服务器，获取临时appToken；</p><p style="color: rgb(0, 0, 0);">3、客户端通过请求发送用户名和上一步获取的appToken等信息给服务器，正确的话就返回access_token；</p><p style="color: rgb(0, 0, 0);">4、客户端拿到这个access_token，后续每次请求中，客户端会把token放在请求Header中发送给服务器，服务器验证签名是否有效，如果有效那么认证就成功，可以返回客户端需要的数据。</p><p style="color: rgb(0, 0, 0);"><br/></p><p style="color: rgb(0, 0, 0); text-align: justify;"><br/></p><p style="color: rgb(0, 0, 0); text-align: justify;"><img src="/download/01098545d3e7f10248beb23061bee43acdd0.png"/></p><p style="color: rgb(0, 0, 0); text-align: justify;"><br/></p><ul class=" list-paddingleft-2" style=""><li><p class="md-end-block md-p" style=""><span class="md-pair-s " style=""><strong style="">x-acgw-identity</strong></span></p><p class="md-end-block md-p" style=""><span class="md-pair-s " style=""><strong style=""><span style="color: rgb(51, 51, 51); background-color: rgb(255, 255, 255);"></span><span style="color: rgb(227, 108, 9);">x-acgw-<strong style="">identity</strong>是第三方应用的身份标识，应用启用后自动颁发，为API请求的必填公共参数。</span></strong></span></p></li><li><p style=""><strong style="">appId和appSecret</strong></p><p style="color: rgb(0, 0, 0);">appId是第三方应用的唯一标识，appSecret是第三方应用的密钥，它们相当于用户名和密码。注册第三方应用之后就会生成一个appId和appSecret。另外appSecret和密码一样也可以重置，在第三方应用的编辑页面可以重置密钥。</p></li><li><p><strong style="">app_token</strong></p><p><strong style=""></strong><span style="color: rgb(0, 0, 0);">即应用临时令牌。当用户在开放平台访问API前，需对应用进行授权，授权后第三方应用可访问用户的隐私数据。app_token为一次性令牌，有效期为2小时。</span></p><p><span style="color: rgb(0, 0, 0);"></span></p><p><span style="color: rgb(0, 0, 0);"></span></p><p><span style="color: rgb(0, 0, 0);"></span></p><p><span style="color: rgb(0, 0, 0);"></span></p></li><li><p label="正文" style=""><strong style="">access_token</strong></p><p label="正文" style=""><strong style=""></strong><span style="color: rgb(0, 0, 0);">即用户授权令牌，为用户一次会话的授权标识，有效期2小时。在获得app_token后，通过调用开放平台后台接口getAppToken来获取access_token。第三方应用在调用API服务时，需要带上access_token信息作为访问的凭证。</span></p></li></ul><p class="" label="" style=""><br/></p><p class="" label="" style="">1）<strong style="">获取app_token</strong></p><p style="color: rgb(0, 0, 0); text-align: justify;"><strong style="">请求Body参数</strong><br/></p><table width="99%"><tbody style=""><tr class="firstRow" style=""><td width="84" valign="center" style=""><p style=""><strong style="">传入参数</strong></p></td><td width="76" valign="center" style=""><p style=""><strong style="">字段类型</strong></p></td><td width="63" valign="top" style=""><p style=""><strong style="">是否必输</strong></p></td><td width="489" valign="center" style=""><p style=""><strong style="">字段说明</strong></p></td></tr><tr style=""><td width="84" valign="center" style=""><p style="">appId</p></td><td width="76" valign="center" style=""><p style="">string</p></td><td width="63" valign="center" style=""><p style="">是</p></td><td width="489" valign="center" style=""><p style="">第三方appId，即例子中的：test</p></td></tr><tr style=""><td width="84" valign="center" style=""><p style="">appSecret</p></td><td width="76" valign="center" style=""><p style="">string</p></td><td width="63" valign="center" style=""><p style="">是</p></td><td width="489" valign="center" style=""><p style="">第三方app的密码，即例子中的：123456789Asd!@123456789</p></td></tr><tr style=""><td width="84" valign="center" style=""><p style="">tenantid</p></td><td width="76" valign="center" style=""><p style="">string</p></td><td width="63" valign="center" style=""><p style="">否</p></td><td width="489" valign="center" style=""><p style="">租户ID</p></td></tr><tr style=""><td width="84" valign="center" style=""><p style="">accountId</p></td><td width="76" valign="center" style=""><p style="">string</p></td><td width="63" valign="center" style=""><p style="">否</p></td><td width="489" valign="center" style=""><p style="">数据中心ID，如果不输入，默认会选取租户下的缺省数据中心</p></td></tr></tbody></table><p class="" label="" style=""><strong style=""></strong></p><p style="color: rgb(0, 0, 0); text-align: justify;"><strong style=""><br/></strong></p><p style="color: rgb(0, 0, 0); text-align: justify;"><strong style="">请求示例</strong></p><pre class="ueditor-code-area brush:js;toolbar:false" style="">URL:http://{{localhost:}}/api/getAppToken.do
+ 
+请求Header参数：
+Content-Type=application/json
+
+请求BODY参数：
+{
+    "appId": "test",
+    "appSecret": "123456789Asd!@123456789",
+    "tenantid": "tenant_devother_dev",
+    "accountId": "666522411780278272"
+}
+ 
+请求结果：
+{
+    “data”: {
+        "app_token": "d1106e34-8766-47cf-a75c-cd6b24a00c62",
+        "success": true,
+        "error_desc": "",
+        "expire_time": 1621249899783,
+        "error_code": "0"
+    },
+    "state": "success",
+    "status": true
+}</pre><p style="color: rgb(0, 0, 0); text-align: justify;"><br/></p><p class="" label="" style=""><strong style="">2）</strong><strong style="">获取access_token </strong></p><p style="color: rgb(0, 0, 0); text-align: justify;"><strong style="">请求Body参数</strong><br/></p><p style="color: rgb(0, 0, 0); text-align: justify;"><strong style=""></strong></p><table><tbody style=""><tr class="firstRow" style=""><td width="93" valign="center" style=""><p style=""><strong style="">传入参数</strong></p></td><td width="62" valign="center" style=""><p style=""><strong style="">字段类型</strong></p></td><td width="65" valign="top" style=""><p style=""><strong style="">是否必输</strong></p></td><td width="356" valign="center" style=""><p style=""><strong style="">字段说明</strong></p></td></tr><tr style=""><td width="93" valign="center" style=""><p style="">user</p></td><td width="62" valign="center" style=""><p style="">string</p></td><td width="65" valign="center" style=""><p style="">是</p></td><td width="356" valign="center" style=""><p style="">用户手机号</p></td></tr><tr style=""><td width="93" valign="center" style=""><p style="">apptoken</p></td><td width="62" valign="center" style=""><p style="">string</p></td><td width="65" valign="center" style=""><p style="">是</p></td><td width="356" valign="center" style=""><p style="">上一个接口的应用令牌（app_token）</p></td></tr><tr style=""><td width="93" valign="center" style=""><p style="">tenantid</p></td><td width="62" valign="center" style=""><p style="">string</p></td><td width="65" valign="center" style=""><p style="">否</p></td><td width="356" valign="center" style=""><p style="">租户ID</p></td></tr><tr style=""><td width="93" valign="center" style=""><p style="">accountId</p></td><td width="62" valign="center" style=""><p style="">string</p></td><td width="65" valign="center" style=""><p style="">否</p></td><td width="356" valign="center" style=""><p style="">数据中心ID， 如果不输入， 默认会选取租户下的缺省数据中心</p></td></tr><tr style=""><td width="93" valign="center" style=""><p style="">usertype</p></td><td width="62" valign="center" style=""><p style="">String</p></td><td width="65" valign="center" style=""><p style="">否</p></td><td width="356" valign="center" style=""><p style="">Mobile： 标识为手机，默认为手机<br/>Email：标识为email<br/>UserName：标识为用户名</p></td></tr><tr style=""><td width="93" valign="center" style=""><p style="">language</p></td><td width="62" valign="center" style=""><p style="">String</p></td><td width="65" valign="center" style=""><p style="">否</p></td><td width="356" valign="center" style=""><p style="">语言字串： zh_CN，zh_TW等。 默认系统默认语言</p></td></tr></tbody></table><p style="color: rgb(0, 0, 0); text-align: justify;"><strong style=""><br/></strong></p><p style="color: rgb(0, 0, 0); text-align: justify;"><strong style="">请求示例</strong></p><pre class="ueditor-code-area brush:js;toolbar:false" style="">URL：http://{{localhost:}}/api/login.do
+ 
+请求Header参数：
+Content-Type=application/json
+
+请求Body参数：
+{
+    "user": "130****2580",
+    "apptoken": "9c13aa2f-d99b-4884-8a52-d1a065a392cc",
+    "tenantid": "",
+    "accountId": "666522411780278272",
+    "usertype": "Mobile",
+    "language":"zh_CN"
+}
+请求结果：
+{
+    "data": {
+        "access_token": "666522411780278272_ZOmaYoNRmT4XRl9k8RHlt1xuyxJ5fDhf0vFxNpN4EVb37eSAawuQN9RgfuO8hsSGuPHtEb849W5Y0RQxp6CR9Qcm9E4l15h6Cs2B",
+        "success": true,
+        "error_desc": "",
+        "expire_time": 1621250199609,
+        "error_code": "0"
+    },
+    "state": "success",
+    "status": true
+}</pre><p style="color: rgb(0, 0, 0); text-align: justify;"><strong style=""><br/></strong></p><h2 label="一级标题" class="first-title html-anchor-list4-1695016380969 html-anchor-list2-1705999769910" id="html-anchor-list4-1695016380969" style="">1.2  JWT认证流程</h2><p style="color: rgb(0, 0, 0);"> <br/></p><p style="color: rgb(0, 0, 0);">JWT(全称是JSON WEB TOKEN)是一种用于双方之间传递安全信息表述性声明规范，和access_token一样，都是访问资源的令牌。</p><p style="color: rgb(0, 0, 0);"><br/></p><p style="color: rgb(0, 0, 0);">JWT认证流程:</p><p style="color: rgb(0, 0, 0);">1、通过请求指定参数如appId、appSecret、keytype一次性获取JWT。</p><p style="color: rgb(0, 0, 0);">2、客户端拿到这个JWT，后续每次请求中，客户端会把token放在请求Header中发送给服务器，服务器验证签名是否有效，如果有效那么认证就成功，可以返回客户端需要的数据。</p><p style="color: rgb(0, 0, 0);"><br/></p><p class="" label="" style=""><strong style="">1）获取JWT</strong></p><p class="" label="" style=""><strong style="color: rgb(0, 0, 0); text-align: justify;"><br/></strong></p><p style=""><strong style="">请求Body参数</strong></p><p style=""><br/></p><table width="90%"><tbody style=""><tr class="firstRow" style=""><td width="82" valign="center" style=""><p style=""><strong style="">传入参数</strong></p></td><td width="71" valign="center" style=""><p style=""><strong style="">字段类型</strong></p></td><td width="68" valign="top" style=""><p style=""><strong style="">是否必输</strong></p></td><td width="422" valign="center" style=""><p style=""><strong style="">字段说明</strong></p></td></tr><tr style=""><td width="82" valign="center" style=""><p style="">user</p></td><td width="71" valign="center" style=""><p style="">string</p></td><td width="68" valign="center" style=""><p style="">是</p></td><td width="422" valign="center" style=""><p style="">用户手机号</p></td></tr><tr style=""><td width="82" valign="center" style=""><p style="">appId</p></td><td width="71" valign="center" style=""><p style="">string</p></td><td width="68" valign="center" style=""><p style="">是</p></td><td width="422" valign="center" style=""><p style="">第三方appId，即例子中的：test</p></td></tr><tr style=""><td width="82" valign="center" style=""><p style="">appSecret</p></td><td width="71" valign="center" style=""><p style="">string</p></td><td width="68" valign="center" style=""><p style="">是</p></td><td width="422" valign="center" style=""><p style="">第三方app的密码，即例子中的：123456789123456789</p></td></tr><tr style=""><td width="82" valign="center" style=""><p style="">tenantid</p></td><td width="71" valign="center" style=""><p style="">string</p></td><td width="68" valign="center" style=""><p style="">否</p></td><td width="422" valign="center" style=""><p style="">租户ID</p></td></tr><tr style=""><td width="82" valign="center" style=""><p style="">accountId</p></td><td width="71" valign="center" style=""><p style="">string</p></td><td width="68" valign="center" style=""><p style="">否</p></td><td width="422" valign="center" style=""><p style="">数据中心ID， 如果不输入， 默认会选取租户下的缺省数据中心</p></td></tr><tr style=""><td width="82" valign="center" style=""><p style="">usertype</p></td><td width="71" valign="center" style=""><p style="">String</p></td><td width="68" valign="center" style=""><p style="">否</p></td><td width="422" valign="center" style=""><p style="">Mobile： 标识为手机， 默认为手机<br/>Email：标识为email<br/>UserName：标识为用户名</p></td></tr><tr style=""><td width="82" valign="center" style=""><p style="">keytype</p></td><td width="71" valign="center" style=""><p style="">String</p></td><td width="68" valign="center" style=""><p style="">是</p></td><td width="422" valign="center" style=""><p style="">声明认证方式，如jwt</p></td></tr></tbody></table><p style=""><strong style="color: rgb(0, 0, 0); text-align: justify;"><br/></strong></p><p style=""><br/></p><p style=""><strong style="color: rgb(0, 0, 0); text-align: justify;">请求示例</strong></p><pre class="ueditor-code-area brush:js;toolbar:false" style="">URL:http://{{localhost:}}/api/login.do
+ 
+请求Header参数：
+Content-Type=application/json
+
+请求BODY参数：
+{
+    "user": "130****2580",
+    "appId": "test",
+    "appSecret": "123456789123456789",
+    "tenantid": "baseline_a",
+    "accountId": "1173910536060928000",
+    "usertype": "Mobile",
+    "keytype":"JWT"
+}
+ 
+ 
+请求结果：
+{
+    "data": {
+        "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmaWQiOiIxMzQ2NjczOSIsInN1YiI6Imtkand0IiwiZnBob25lIjoiMTcyOTk5OTk5OTkiLCJlaWQiOiIxMTQ3NTYxNyIsImZ0cnVlbmFtZSI6IklFUlAiLCJmb3JnaWQiOiIxMDAwMDAiLCJpc3MiOiJrZCIsInVzZXJpZCI6IjEzNDY2NzM5IiwiZmxhc3Rsb2dpbmlwIjoiMTcyLjIwLjIwMC41NCIsImZpc2FjdGl2ZWQiOiIxIiwiZm9wZW5pZCI6IjVhMmRlZmNiZTRiMDk1N2ZhMDhmOGM3MiIsImZsYXN0bG9naW50aW1lIjoiMjAyMS0wOC0yMCAwMDowMDowMCIsImZlbmFibGUiOiIxIiwiZnVpZCI6IjEzNDY2NzM5IiwidXNlclR5cGUiOiIxIiwiZXhwIjoxNjI5NDQ3MDM1LCJpYXQiOjE2Mjk0Mzk4MzUsImZpc3JlZ2lzdGVkIjoiMSIsInVzZXJvcGVuaWQiOiI1YTJkZWZjYmU0YjA5NTdmYTA4ZjhjNzIiLCJ1c2VybmFtZSI6IklFUlAifQ.kf_UfkQuAPb_qHZAc2ovB7nzpnWIKpl_7eXw42UjNYM",
+        "success": true,
+        "error_desc": "",
+        "expire_time": 1629447035019,
+        "error_code": "0"
+    },
+    "state": "success",
+    "status": true
+}</pre><p style=""><br/></p><p style="color: rgb(0, 0, 0);">下面详细介绍如何通过JWT调用API服务。</p><p style="color: rgb(0, 0, 0);"><br/></p><p class="" label="" style=""><strong style="">2）GET API 实例</strong></p><p style="color: rgb(0, 0, 0); text-align: justify;"><strong style="">请求示例</strong></p><pre class="ueditor-code-area brush:js;toolbar:false" style="">URL：https://feature.kingdee.com:2024/baseline_a/kapi/sys/isc_demo_basedata_1/query?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmaWQiOiIxMzQ2NjczOSIsInN1YiI6Imtkand0IiwiZnBob25lIjoiMTcyOTk5OTk5OTkiLCJlaWQiOiIxMTQ3NTYxNyIsImZ0cnVlbmFtZSI6IklFUlAiLCJmb3JnaWQiOiIxMDAwMDAiLCJpc3MiOiJrZCIsInVzZXJpZCI6IjEzNDY2NzM5IiwiZmxhc3Rsb2dpbmlwIjoiMTcyLjIwLjIwMC41NCIsImZpc2FjdGl2ZWQiOiIxIiwiZm9wZW5pZCI6IjVhMmRlZmNiZTRiMDk1N2ZhMDhmOGM3MiIsImZsYXN0bG9naW50aW1lIjoiMjAyMS0wOC0yMCAwMDowMDowMCIsImZlbmFibGUiOiIxIiwiZnVpZCI6IjEzNDY2NzM5IiwidXNlclR5cGUiOiIxIiwiZXhwIjoxNjI5NDQ3MDM1LCJpYXQiOjE2Mjk0Mzk4MzUsImZpc3JlZ2lzdGVkIjoiMSIsInVzZXJvcGVuaWQiOiI1YTJkZWZjYmU0YjA5NTdmYTA4ZjhjNzIiLCJ1c2VybmFtZSI6IklFUlAifQ.kf_UfkQuAPb_qHZAc2ovB7nzpnWIKpl_7eXw42UjNYM&appId=TEST&accountId=1173910536060928000&x-acgw-identity=djF8MThlZGYyZDk5NjMwMjQ5YWNjMDF8NDg2Njc0MTI5MTkxMXzyd3uGGT+lJt/F8Ae15FcZA9e4vc+wmWQPWCPHyrAkhnw=
+ 
+请求结果：
+{
+    "success": "true",
+    "data": {
+        "count": 1,
+        "header": [
+            {
+                "name": "name",
+                "caption": "名称",
+                "type": "String"
+            },
+            {
+                "name": "number",
+                "caption": "编码",
+                "type": "String"
+            }
+        ],
+        "rows": [
+            [
+                "123asd",
+                "123asd"
+            ]
+        ]
+    }
+}</pre><p style="color: rgb(0, 0, 0); text-align: justify;"><br/></p><p style="color: rgb(0, 0, 0); text-align: justify;"><strong style="">请求参数</strong></p><table width="95%"><tbody style=""><tr class="firstRow" style=""><td width="77" valign="center" style=""><p style=""><strong style="">传入参数</strong></p></td><td width="110" valign="center" style=""><p style=""><strong style="">字段类型</strong></p></td><td width="81" valign="top" style=""><p style=""><strong style="">是否必输</strong></p></td><td width="415" valign="center" style=""><p style=""><strong style="">字段说明</strong></p></td></tr><tr style=""><td width="77" valign="center" style=""><p style="">jwt</p></td><td width="110" valign="center" style=""><p style="">string</p></td><td width="81" valign="center" style=""><p style="">是</p></td><td width="415" valign="center" style=""><p style="">用SHA-256算法和JWT非对称加密key对参数进行加密后生成的token。公式：HMACSHA256(base64UrlEncode(header) + "." +base64UrlEncode(payload),key)</p></td></tr><tr style=""><td width="77" valign="center" style=""><p style="">appId</p></td><td width="110" valign="center" style=""><p style="">string</p></td><td width="81" valign="center" style=""><p style="">是</p></td><td width="415" valign="center" style=""><p style="">第三方appId</p></td></tr><tr style=""><td width="77" valign="center" style=""><p style="">accountId</p></td><td width="110" valign="center" style=""><p style="">string</p></td><td width="81" valign="center" style=""><p style="">否</p></td><td width="415" valign="center" style=""><p style="">数据中心ID，如果不输入，默认会选取租户下的缺省数据中心</p></td></tr><tr><td valign="center" colspan="1" rowspan="1">x-acgw-identity</td><td valign="center" colspan="1" rowspan="1"><span style="">string</span></td><td valign="center" colspan="1" rowspan="1"><span style="">是</span></td><td valign="center" colspan="1" rowspan="1">当前租户内，第三方应用的唯一身份标识</td></tr></tbody></table><p style="color: rgb(0, 0, 0);"> </p><p class="" label="" style=""><strong style="">3）POST API 实例</strong></p><p style="color: rgb(0, 0, 0); text-align: justify;"><strong style="">请求示例</strong></p><pre class="ueditor-code-area brush:js;toolbar:false" style="">URL：http://localhost:8080/ierp/kapi/sys/pm_purorderbill/save
+ 
+请求Header参数：
+jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmaWQiOiIxMzQ2NjczOSIsInN1YiI6Imtkand0IiwiZnBob25lIjoiMTcyOTk5OTk5OTkiLCJlaWQiOiIxMTQ3NTYxNyIsImZ0cnVlbmFtZSI6IklFUlAiLCJmb3JnaWQiOiIxMDAwMDAiLCJpc3MiOiJrZCIsInVzZXJpZCI6IjEzNDY2NzM5IiwiZmxhc3Rsb2dpbmlwIjoiMTcyLjIwLjIwMC41NCIsImZpc2FjdGl2ZWQiOiIxIiwiZm9wZW5pZCI6IjVhMmRlZmNiZTRiMDk1N2ZhMDhmOGM3MiIsImZsYXN0bG9naW50aW1lIjoiMjAyMS0wOC0yMCAwMDowMDowMCIsImZlbmFibGUiOiIxIiwiZnVpZCI6IjEzNDY2NzM5IiwidXNlclR5cGUiOiIxIiwiZXhwIjoxNjI5NDQ3MDM1LCJpYXQiOjE2Mjk0Mzk4MzUsImZpc3JlZ2lzdGVkIjoiMSIsInVzZXJvcGVuaWQiOiI1YTJkZWZjYmU0YjA5NTdmYTA4ZjhjNzIiLCJ1c2VybmFtZSI6IklFUlAifQ.kf_UfkQuAPb_qHZAc2ovB7nzpnWIKpl_7eXw42UjNYM
+appId=TEST
+accountId=1173910536060928000    //有默认数据中心可以不传
+x-acgw-identity={第三方应用身份标识}
+
+请求BODY参数：
+{
+    "data": {
+        "number": "cugk",
+        "name": "cugk",
+        "alias_name": "cugk"
+    }
+}
+ 
+请求结果：
+{
+    "data": {
+        "success": true,
+        "needSign": false,
+        "needWfAssignPersons": false,
+        "cancelWriteLog": true,
+        "showMessage": true,
+        "billCount": 1,
+        "successPkIds": [
+            1226640481962735668
+        ],
+        "billNos": {
+            "1226640481962735668": "cugk"
+        },
+        "validateResult": {
+            "validateErrors": [],
+            "success": true,
+            "message": "",
+            "errorPkIds": [],
+            "errorDataIndexs": []
+        },
+        "runSecond": 0,
+        "allErrorOrValidateInfo": [],
+        "allErrorInfo": []
+    },
+    "success": true,
+    "errorCode": "success",
+    "message": null
+}</pre><p style="color: rgb(0, 0, 0); text-align: justify;"><strong style=""> </strong></p><p style="color: rgb(0, 0, 0); text-align: justify;"><strong style="">请求头参数</strong></p><table width="98%"><tbody style=""><tr class="firstRow" style=""><td width="120" valign="center" style=""><p style=""><strong style="">传入参数</strong></p></td><td width="38" valign="center" style=""><p style=""><strong style="">字段类型</strong></p></td><td width="77" valign="top" style=""><p style=""><strong style="">是否必输</strong></p></td><td width="473" valign="center" style=""><p style=""><strong style="">字段说明</strong></p></td></tr><tr style=""><td width="120" valign="center" style=""><p style="">jwt</p></td><td width="38" valign="center" style=""><p style="">string</p></td><td width="77" valign="center" style=""><p style="">是</p></td><td width="473" valign="center" style=""><p style="">用SHA-256算法和JWT非对称加密key对参数进行加密后生成的token。公式：HMACSHA256(base64UrlEncode(header) + "." +base64UrlEncode(payload),key)</p></td></tr><tr style=""><td width="120" valign="center" style=""><p style="">appId</p></td><td width="38" valign="center" style=""><p style="">string</p></td><td width="77" valign="center" style=""><p style="">是</p></td><td width="473" valign="center" style=""><p style="">第三方appId</p></td></tr><tr style=""><td width="120" valign="center" style=""><p style="">accountId</p></td><td width="38" valign="center" style=""><p style="">string</p></td><td width="77" valign="center" style=""><p style="">否</p></td><td width="473" valign="center" style=""><p style="">数据中心ID，如果不输入，默认会选取租户下的缺省数据中心</p></td></tr><tr><td valign="center">x-acgw-identity</td><td valign="center"><span style="">string</span></td><td valign="center"><span style="">是</span></td><td valign="center">当前租户内，第三方应用的唯一身份标识</td></tr></tbody></table><p style="color: rgb(0, 0, 0);">备注：Secret是保存在服务器端的，JWT的签发生成也是在服务器端的，secret就是用来进行JWT的签发和JWT的验证，所以，它就是你服务端的私钥，在任何场景都不应该流露出去。</p><p style=""><br/></p><p label="一级标题" id="html-anchor-list11-1694767433672" class=" html-anchor-list11-1694767433672 html-anchor-list11-1695015348964 html-anchor-list3-1705999769910" style="text-align: justify; font-size: 20px; font-weight: bold; line-height: 42px;">2 更多资讯</p><p style=""><a href="https://vip.kingdee.com/article/537672007622826496" target="_blank">金蝶AIOpenAPI增强型Token认证</a></p><p style="text-align: justify;"><a href="https://vip.kingdee.com/article/537672007622826496" target="_blank">金蝶AIOpenAPI开发认证指南</a></p>

@@ -1,0 +1,80 @@
+{
+  "code": "555401045317338880",
+  "name": "保存操作API",
+  "category": "操作API",
+  "description": "",
+  "method": "POST",
+  "request_params": [
+    {
+      "field": "importType",
+      "type": "系统保存参数",
+      "description": "保存类型，new - 新增，override - 覆盖，overridenew - 覆盖新增，接口默认执行覆盖新增逻辑"
+    },
+    {
+      "field": "更新时触发值更新事件，true - 触发，false - 不触发，接口默认不触发",
+      "type": "firePropChanged"
+    },
+    {
+      "field": "新增时触发值更新事件，true - 触发，false - 不触发，接口默认不触发，开启后性能影响极大，单次请求分录上限为200条注意：经压测，在新增数据时200条分录开与不开值更新，存在10倍的性能损耗差异，建议在超出200条分录时，采用以下解决方案：解决方案一：新增不触发值更新1. API不要配置firePropChangedOnAdd；2. 需值更新的属性，在API上配置为请求参数；3. 由调用方计算并保障传入的数据准确性，这是合理的集成方案且保障了性能；解决方案二：拆分调用1. 将一次数据新增拆分为新增和更新，新增保证200条分录以内；2. 新增成功后再更新追加分录，通过更新触发值更新；3. 更新API的操作参数需增加配置【is_checkentryid】为【false】，保障更新数据时可新增分录数据。",
+      "type": "firePropChangedOnAdd"
+    },
+    {
+      "field": "强制提交（注意，若单据的save插件中有复杂计算逻辑，配置后无法触发），submit - 提交，空 - 不提交，接口默认不自动提交",
+      "type": "forcedSubmit"
+    },
+    {
+      "field": "更新时完整覆盖分录，会将原表单分录数据清除后追加分录， true - 覆盖，false - 不覆盖，接口默认不覆盖；",
+      "type": "OverrideEntry"
+    },
+    {
+      "field": "保存时忽略网络互斥，true - 忽略，false - 不忽略，接口默认不忽略",
+      "type": "mutex_ignoremodify"
+    },
+    {
+      "field": "是否触发引入方法，true - 触发，false - 不触发，接口默认触发",
+      "type": "is_importinit"
+    },
+    {
+      "field": "组合操作参数，支持将保存、提交和审核操作组合执行。save,submit - 保存后提交；save,submit,audit - 保存后提交并审核，接口默认只执行保存。注意：批量保存时，若提交或审核失败，会出现不同状态的数据，需用户手工补偿",
+      "type": "multiOps"
+    },
+    {
+      "field": "rmStatusControl",
+      "type": "自定义参数",
+      "description": "是否移除单据状态控制，默认为false，当值为true时，可跳过已审核单据和基础资料不允许修改的校验，直接更新已审核的单据或基础资料"
+    },
+    {
+      "field": "默认为true，默认为true，若设为false，则更新数据时，不强制校验分录id在系统中是否存在，适用于接口更新单据时，同时新增单据分录（带id）的场景",
+      "type": "is_checkentryid"
+    },
+    {
+      "field": "强制提交并审核，默认为false，当值为 true 时，新增数据时会自动提交并审核单据（注意，若单据的save插件中有复杂计算逻辑，配置后无法触发）",
+      "type": "forcedAudit"
+    },
+    {
+      "field": "该参数配合forcedAudit参数使用，可控制OpenAPI提交审核的单据是否进入工作流，默认为true，将该值设为false后，即可跳过工作流，直接审核成功。",
+      "type": "WF"
+    },
+    {
+      "field": "更新时汇总分录金额到单据头，默认为false，当值为true时，当API不传入单据头汇总金额字段时，会将分录金额自动汇总至单据头",
+      "type": "updateEntrySummaryEnable"
+    },
+    {
+      "field": "是否触发表单插件中的fireAfterCreateNewData方法，默认为true，当值为false时，不触发该方法。",
+      "type": "fireAfterCreateNewData"
+    },
+    {
+      "field": "保存时是否触发实体中的字段权限方案（字段不可读写），默认为true，当值为false时，不触发该权限校验",
+      "type": "fireFieldControlRule"
+    },
+    {
+      "field": "保存时是否在内存中检查候选键，默认为false，将请求候选键和数据库已存在的数据，进行唯一性校验；当值为true时，在内存中检查候选键是否唯一",
+      "type": "judgeKeyRepeatCheck"
+    }
+  ],
+  "response_params": [],
+  "error_codes": [],
+  "examples": [
+    "{\n    “data”: {//结果数据\n        \"result\": [],//返回结果详细信息\n　         “failcount”: “”,//操作失败数量\n　         “successcount”: “”//操作成功数量\n        }\n       “errorCode”: “”,//错误码\n       “message”: null,//失败时的提示信息\n       “status”: true/false//是否成功\n   }"
+  ]
+}

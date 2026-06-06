@@ -1,0 +1,23 @@
+{
+  "code": "543435553572890112",
+  "name": "认证方式-基本认证",
+  "category": "认证指南",
+  "description": "OpenAPI基本认证，是结合了HTTPS Basic Authentication 的一种认证方式，在通过基本认证登录系统并调用接口的过程中，需要在请求的URL参数或请求header中带上openApiSign凭证，形式如下： {host}?openApiSign=xxx，该凭证是由第三方应用、代理用户和当前数据中心ID组合并加密生成的base64编码，可以作为访问开放平台OpenAPI 的固定认证密钥。基本认证作为接口匿名访问的一种更安全和方便的替代方案，可以广泛应用于接口回调的场景。",
+  "method": "POST",
+  "request_params": [
+    {
+      "field": "应用身份标识，第三方应用启用后自动生成",
+      "required": "是"
+    },
+    {
+      "field": "基本认证凭证",
+      "required": "是"
+    }
+  ],
+  "response_params": [],
+  "error_codes": [],
+  "examples": [
+    "URL：http://{{localhost}}/kapi/v2/kdtest/gl/gl_voucher/gl_voucher?billno=cugyi5&pageSize=10&pageno=1&openApiSign=Slh4bFF3Mnh0LXZLUE9fRUtzRnItc2JTblgyM0RtNk9RN2V5ODR2WU13QT06MTMzMTIwNDQ0NTk5NTc5NDQzbg==&x-acgw-Identity={第三方应用身份标识}\n\n请求Header参数：\nContent-Type=application/json\n\n请求结果：\n{\n    \"data\": {\n        \"lastPage\": true,\n        \"pageNo\": 1,\n        \"pageSize\": 10,\n        \"rows\": [\n            {\n                \"id\": \"1393492185164283904\",\n                \"billno\": \"cugyi5\",\n                \"entries\": [\n                    {\n                        \"id\": \"1393492186380632064\",\n                        \"assgrp\": {\n                            \"id\": \"1393492186061865984\",\n                            \"供应商\": {\n                                \"name\": \"唐山金属材料有限公司\",\n                                \"number\": \"SUP000001\",\n                                \"id\": \"346159251409862656\"\n                            },\n                            \"文本弹性域\": \"其他\"\n                        }\n                    }\n                ]\n            }\n        ],\n        \"totalCount\": 1\n    },\n    \"errorCode\": \"0\",\n    \"message\": \"\",\n    \"status\": true\n}",
+    "http://{{localhost}}/$/openApiSign/xxx/billno/cugyi5/pageSize/10/pageno/1"
+  ]
+}

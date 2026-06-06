@@ -1,0 +1,11 @@
+{
+  "code": "555400185669328896",
+  "name": "查询操作API",
+  "category": "操作API",
+  "description": "1 接口介绍",
+  "method": "POST",
+  "request_params": [],
+  "response_params": [],
+  "error_codes": [],
+  "examples": []
+}

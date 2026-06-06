@@ -1,0 +1,93 @@
+{
+  "code": "537675769762560000",
+  "name": "认证方式-Accesstoken认证/JWT认证",
+  "category": "认证指南",
+  "description": "Token认证是指客户端登陆完成之后，服务端会生成一个有时效性的token返回给客户端，以后每次请求客户端都需要带上token。它可以当作URL参数或在请求头中发送，如“http://demo.com/users?accessToken=xxxxxx”，服务端以此来控制身份。当token过期后，服务端会销毁token，客户端需要重新请求获得token。",
+  "method": "POST",
+  "request_params": [
+    {
+      "field": "第三方appId，即例子中的：test"
+    },
+    {
+      "field": "第三方app的密码，即例子中的：123456789Asd!@123456789"
+    },
+    {
+      "field": "租户ID"
+    },
+    {
+      "field": "数据中心ID，如果不输入，默认会选取租户下的缺省数据中心"
+    },
+    {
+      "field": "用户手机号"
+    },
+    {
+      "field": "上一个接口的应用令牌（app_token）"
+    },
+    {
+      "field": "租户ID"
+    },
+    {
+      "field": "数据中心ID， 如果不输入， 默认会选取租户下的缺省数据中心"
+    },
+    {
+      "field": "Mobile： 标识为手机，默认为手机Email：标识为emailUserName：标识为用户名"
+    },
+    {
+      "field": "语言字串： zh_CN，zh_TW等。 默认系统默认语言"
+    },
+    {
+      "field": "用户手机号"
+    },
+    {
+      "field": "第三方appId，即例子中的：test"
+    },
+    {
+      "field": "第三方app的密码，即例子中的：123456789123456789"
+    },
+    {
+      "field": "租户ID"
+    },
+    {
+      "field": "数据中心ID， 如果不输入， 默认会选取租户下的缺省数据中心"
+    },
+    {
+      "field": "Mobile： 标识为手机， 默认为手机Email：标识为emailUserName：标识为用户名"
+    },
+    {
+      "field": "声明认证方式，如jwt"
+    },
+    {
+      "field": "用SHA-256算法和JWT非对称加密key对参数进行加密后生成的token。公式：HMACSHA256(base64UrlEncode(header) + \".\" +base64UrlEncode(payload),key)"
+    },
+    {
+      "field": "第三方appId"
+    },
+    {
+      "field": "数据中心ID，如果不输入，默认会选取租户下的缺省数据中心"
+    },
+    {
+      "field": "当前租户内，第三方应用的唯一身份标识"
+    },
+    {
+      "field": "用SHA-256算法和JWT非对称加密key对参数进行加密后生成的token。公式：HMACSHA256(base64UrlEncode(header) + \".\" +base64UrlEncode(payload),key)"
+    },
+    {
+      "field": "第三方appId"
+    },
+    {
+      "field": "数据中心ID，如果不输入，默认会选取租户下的缺省数据中心"
+    },
+    {
+      "field": "当前租户内，第三方应用的唯一身份标识"
+    }
+  ],
+  "response_params": [],
+  "error_codes": [],
+  "examples": [
+    "URL:http://{{localhost:}}/api/getAppToken.do\n \n请求Header参数：\nContent-Type=application/json\n\n请求BODY参数：\n{\n    \"appId\": \"test\",\n    \"appSecret\": \"123456789Asd!@123456789\",\n    \"tenantid\": \"tenant_devother_dev\",\n    \"accountId\": \"666522411780278272\"\n}\n \n请求结果：\n{\n    “data”: {\n        \"app_token\": \"d1106e34-8766-47cf-a75c-cd6b24a00c62\",\n        \"success\": true,\n        \"error_desc\": \"\",\n        \"expire_time\": 1621249899783,\n        \"error_code\": \"0\"\n    },\n    \"state\": \"success\",\n    \"status\": true\n}",
+    "URL：http://{{localhost:}}/api/login.do\n \n请求Header参数：\nContent-Type=application/json\n\n请求Body参数：\n{\n    \"user\": \"130****2580\",\n    \"apptoken\": \"9c13aa2f-d99b-4884-8a52-d1a065a392cc\",\n    \"tenantid\": \"\",\n    \"accountId\": \"666522411780278272\",\n    \"usertype\": \"Mobile\",\n    \"language\":\"zh_CN\"\n}\n请求结果：\n{\n    \"data\": {\n        \"access_token\": \"666522411780278272_ZOmaYoNRmT4XRl9k8RHlt1xuyxJ5fDhf0vFxNpN4EVb37eSAawuQN9RgfuO8hsSGuPHtEb849W5Y0RQxp6CR9Qcm9E4l15h6Cs2B\",\n        \"success\": true,\n        \"error_desc\": \"\",\n        \"expire_time\": 1621250199609,\n        \"error_code\": \"0\"\n    },\n    \"state\": \"success\",\n    \"status\": true\n}",
+    "URL:http://{{localhost:}}/api/login.do\n \n请求Header参数：\nContent-Type=application/json\n\n请求BODY参数：\n{\n    \"user\": \"130****2580\",\n    \"appId\": \"test\",\n    \"appSecret\": \"123456789123456789\",\n    \"tenantid\": \"baseline_a\",\n    \"accountId\": \"1173910536060928000\",\n    \"usertype\": \"Mobile\",\n    \"keytype\":\"JWT\"\n}\n \n \n请求结果：\n{\n    \"data\": {\n        \"access_token\": \"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmaWQiOiIxMzQ2NjczOSIsInN1YiI6Imtkand0IiwiZnBob25lIjoiMTcyOTk5OTk5OTkiLCJlaWQiOiIxMTQ3NTYxNyIsImZ0cnVlbmFtZSI6IklFUlAiLCJmb3JnaWQiOiIxMDAwMDAiLCJpc3MiOiJrZCIsInVzZXJpZCI6IjEzNDY2NzM5IiwiZmxhc3Rsb2dpbmlwIjoiMTcyLjIwLjIwMC41NCIsImZpc2FjdGl2ZWQiOiIxIiwiZm9wZW5pZCI6IjVhMmRlZmNiZTRiMDk1N2ZhMDhmOGM3MiIsImZsYXN0bG9naW50aW1lIjoiMjAyMS0wOC0yMCAwMDowMDowMCIsImZlbmFibGUiOiIxIiwiZnVpZCI6IjEzNDY2NzM5IiwidXNlclR5cGUiOiIxIiwiZXhwIjoxNjI5NDQ3MDM1LCJpYXQiOjE2Mjk0Mzk4MzUsImZpc3JlZ2lzdGVkIjoiMSIsInVzZXJvcGVuaWQiOiI1YTJkZWZjYmU0YjA5NTdmYTA4ZjhjNzIiLCJ1c2VybmFtZSI6IklFUlAifQ.kf_UfkQuAPb_qHZAc2ovB7nzpnWIKpl_7eXw42UjNYM\",\n        \"success\": true,\n        \"error_desc\": \"\",\n        \"expire_time\": 1629447035019,\n        \"error_code\": \"0\"\n    },\n    \"state\": \"success\",\n    \"status\": true\n}",
+    "URL：https://feature.kingdee.com:2024/baseline_a/kapi/sys/isc_demo_basedata_1/query?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmaWQiOiIxMzQ2NjczOSIsInN1YiI6Imtkand0IiwiZnBob25lIjoiMTcyOTk5OTk5OTkiLCJlaWQiOiIxMTQ3NTYxNyIsImZ0cnVlbmFtZSI6IklFUlAiLCJmb3JnaWQiOiIxMDAwMDAiLCJpc3MiOiJrZCIsInVzZXJpZCI6IjEzNDY2NzM5IiwiZmxhc3Rsb2dpbmlwIjoiMTcyLjIwLjIwMC41NCIsImZpc2FjdGl2ZWQiOiIxIiwiZm9wZW5pZCI6IjVhMmRlZmNiZTRiMDk1N2ZhMDhmOGM3MiIsImZsYXN0bG9naW50aW1lIjoiMjAyMS0wOC0yMCAwMDowMDowMCIsImZlbmFibGUiOiIxIiwiZnVpZCI6IjEzNDY2NzM5IiwidXNlclR5cGUiOiIxIiwiZXhwIjoxNjI5NDQ3MDM1LCJpYXQiOjE2Mjk0Mzk4MzUsImZpc3JlZ2lzdGVkIjoiMSIsInVzZXJvcGVuaWQiOiI1YTJkZWZjYmU0YjA5NTdmYTA4ZjhjNzIiLCJ1c2VybmFtZSI6IklFUlAifQ.kf_UfkQuAPb_qHZAc2ovB7nzpnWIKpl_7eXw42UjNYM&appId=TEST&accountId=1173910536060928000&x-acgw-identity=djF8MThlZGYyZDk5NjMwMjQ5YWNjMDF8NDg2Njc0MTI5MTkxMXzyd3uGGT+lJt/F8Ae15FcZA9e4vc+wmWQPWCPHyrAkhnw=\n \n请求结果：\n{\n    \"success\": \"true\",\n    \"data\": {\n        \"count\": 1,\n        \"header\": [\n            {\n                \"name\": \"name\",\n                \"caption\": \"名称\",\n                \"type\": \"String\"\n            },\n            {\n                \"name\": \"number\",\n                \"caption\": \"编码\",\n                \"type\": \"String\"\n            }\n        ],\n        \"rows\": [\n            [\n                \"123asd\",\n                \"123asd\"\n            ]\n        ]\n    }\n}",
+    "URL：http://localhost:8080/ierp/kapi/sys/pm_purorderbill/save\n \n请求Header参数：\njwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmaWQiOiIxMzQ2NjczOSIsInN1YiI6Imtkand0IiwiZnBob25lIjoiMTcyOTk5OTk5OTkiLCJlaWQiOiIxMTQ3NTYxNyIsImZ0cnVlbmFtZSI6IklFUlAiLCJmb3JnaWQiOiIxMDAwMDAiLCJpc3MiOiJrZCIsInVzZXJpZCI6IjEzNDY2NzM5IiwiZmxhc3Rsb2dpbmlwIjoiMTcyLjIwLjIwMC41NCIsImZpc2FjdGl2ZWQiOiIxIiwiZm9wZW5pZCI6IjVhMmRlZmNiZTRiMDk1N2ZhMDhmOGM3MiIsImZsYXN0bG9naW50aW1lIjoiMjAyMS0wOC0yMCAwMDowMDowMCIsImZlbmFibGUiOiIxIiwiZnVpZCI6IjEzNDY2NzM5IiwidXNlclR5cGUiOiIxIiwiZXhwIjoxNjI5NDQ3MDM1LCJpYXQiOjE2Mjk0Mzk4MzUsImZpc3JlZ2lzdGVkIjoiMSIsInVzZXJvcGVuaWQiOiI1YTJkZWZjYmU0YjA5NTdmYTA4ZjhjNzIiLCJ1c2VybmFtZSI6IklFUlAifQ.kf_UfkQuAPb_qHZAc2ovB7nzpnWIKpl_7eXw42UjNYM\nappId=TEST\naccountId=1173910536060928000    //有默认数据中心可以不传\nx-acgw-identity={第三方应用身份标识}\n\n请求BODY参数：\n{\n    \"data\": {\n        \"number\": \"cugk\",\n        \"name\": \"cugk\",\n        \"alias_name\": \"cugk\"\n    }\n}\n \n请求结果：\n{\n    \"data\": {\n        \"success\": true,\n        \"needSign\": false,\n        \"needWfAssignPersons\": false,\n        \"cancelWriteLog\": true,\n        \"showMessage\": true,\n        \"billCount\": 1,\n        \"successPkIds\": [\n            1226640481962735668\n        ],\n        \"billNos\": {\n            \"1226640481962735668\": \"cugk\"\n        },\n        \"validateResult\": {\n            \"validateErrors\": [],\n            \"success\": true,\n            \"message\": \"\",\n            \"errorPkIds\": [],\n            \"errorDataIndexs\": []\n        },\n        \"runSecond\": 0,\n        \"allErrorOrValidateInfo\": [],\n        \"allErrorInfo\": []\n    },\n    \"success\": true,\n    \"errorCode\": \"success\",\n    \"message\": null\n}"
+  ]
+}

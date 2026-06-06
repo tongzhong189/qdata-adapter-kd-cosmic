@@ -1,0 +1,76 @@
+{
+  "code": "537942044145205760",
+  "name": "认证方式-摘要认证",
+  "category": "认证指南",
+  "description": "一、摘要认证介绍",
+  "method": "POST",
+  "request_params": [
+    {
+      "field": "第三方应用系统身份标识（认证凭证面板获取）",
+      "type": "string"
+    },
+    {
+      "field": "第三方appId（认证凭证面板获取）",
+      "type": "string"
+    },
+    {
+      "field": "当前时间，和服务器时间相差10分钟就为无效请求，目前格式为yyyy-MM-dd HH:mm:ss，以后为时间戳",
+      "type": "string"
+    },
+    {
+      "field": "访问随机数，最好32位uuid，如果随机数已经访问过，则再次访问无效",
+      "type": "string"
+    },
+    {
+      "field": "用SHA-256算法和摘要加密认证密钥key对query的拼接参数(如：tesetA=tt&testB=tt2+timestamp+ signatureNonce进行摘要后的结果。公式：HMACSHA256（query的拼接参数+timestamp+signatureNonce，key）",
+      "type": "string"
+    },
+    {
+      "field": "参与摘要的参数列表，多个参数用“,”隔开",
+      "type": "string"
+    },
+    {
+      "field": "金蝶云或云之家的用户名",
+      "type": "string"
+    },
+    {
+      "field": "用户类型：Mobile： 标识为手机，默认为手机Email：标识为emailUserName：标识为用户名",
+      "type": "string"
+    },
+    {
+      "field": "第三方应用系统身份标识（认证凭证面板获取）",
+      "type": "string"
+    },
+    {
+      "field": "第三方appId（认证凭证面板获取）",
+      "type": "string"
+    },
+    {
+      "field": "当前时间，和服务器时间相差10分钟就为无效请求，目前格式为yyyy-mm-dd hh:mm:ss，以后为时间戳",
+      "type": "string"
+    },
+    {
+      "field": "访问随机数，最好32位uuid，如果随机数已经访问过，则再次访问无效",
+      "type": "string"
+    },
+    {
+      "field": "用SHA-256算法和摘要加密认证密钥key对body+timestamp+ signatureNonce进行摘要后的结果。公式：HMACSHA256（body+timestamp+signatureNonce，key）",
+      "type": "string"
+    },
+    {
+      "field": "金蝶云或云之家的用户名",
+      "type": "string"
+    },
+    {
+      "field": "用户类型：Mobile： 标识为手机，默认为手机Email：标识为emailUserName：标识为用户名",
+      "type": "string"
+    }
+  ],
+  "response_params": [],
+  "error_codes": [],
+  "examples": [
+    "URL：http://{{localhost}}/kapi/sys/isc_demo_basedata_1/query?x-acgw-identity={第三方应用身份标识}&appId=TEST&timestamp=2021-08-18 14:19:08&signatureNonce=iksiertoidkwek;oitdwudysletwsuej&signature=32beeebfc277817a80b0\n1d5787242c51ca5295f5edcf2eb9371ff367f8b487a5&parameters=select&user=17299999999&usertype=Mobile&accountId=1173910536060928000\n\n\n请求Header参数：\nContent-Type=application/json\n\n请求结果：\n{\n   \"success\": \"true\",\n   \"data\": {\n       \"count\": 1,\n       \"header\": [\n           {\n               \"name\": \"name\",\n               \"caption\": \"名称\",\n               \"type\": \"String\"\n           },\n           {\n               \"name\": \"number\",\n               \"caption\": \"编码\",\n               \"type\": \"String\"\n           }\n       ],\n       \"rows\": [\n           [\n               \"123asd\",\n               \"123asd\"\n           ]\n       ]\n   }\n}",
+    "URL：http://{{localhost}}/kapi/sys/pm_purorderbill/save\n\n请求Header参数：\n  x-acgw-identity={第三方应用身份标识}\n  appId=test\n  signature=32beeebfc277817a80b01d5787242c51ca5295f5edcf2eb9371ff367f8b487a5\n  timestamp=2020-08-19 15:31:59\n  signatureNonce=iksiertoidkwek;oitdwudysletwsues\n  user=130****2580\n  usertype= Mobile\n  accountId=1173910536060928000 \n\n请求Body参数：\n{\n    \"data\": {\n        \"number\": \"cugQ\",\n        \"name\": \"cugQ\",\n        \"alias_name\": \"cugQ\"\n    }\n}\n\n请求结果：\n{\n   \"data\": {\n       \"success\": true,\n       \"needSign\": false,\n       \"needWfAssignPersons\": false,\n       \"cancelWriteLog\": true,\n       \"showMessage\": true,\n       \"billCount\": 1,\n       \"successPkIds\": [\n           1226640481962735616\n       ],\n       \"billNos\": {\n           \"1226640481962735616\": \"cugQ\"\n       },\n       \"validateResult\": {\n           \"validateErrors\": [],\n           \"success\": true,\n           \"message\": \"\",\n           \"errorPkIds\": [],\n           \"errorDataIndexs\": []\n       },\n       \"runSecond\": 0,\n       \"allErrorOrValidateInfo\": [],\n       \"allErrorInfo\": []\n   },\n   \"success\": true,\n   \"errorCode\": \"success\",\n   \"message\": null\n}",
+    "{    \n    \"testName\": \"test\"                                           \n}"
+  ]
+}

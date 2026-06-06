@@ -1,0 +1,15 @@
+{
+  "code": "646787188905978624",
+  "name": "金蝶AI星空OpenAPI错误码说明",
+  "category": "开发规范",
+  "description": "在使用OpenAPI进行开发和集成时，遇到错误码是在所难免的，为了帮助开发者们更高效地识别和解决这些问题，我们特别整理了一份详尽的OpenAPI错误码清单，以及针对常见错误码的解决方案。",
+  "method": "POST",
+  "request_params": [],
+  "response_params": [],
+  "error_codes": [],
+  "examples": [
+    "{\n    \"errorCode\": \"2501\",\n    \"messagecn\": \"不存在应用信息[网关]\"\n}",
+    "{\n    \"errorCode\": \"2551\",\n    \"messagecn\": \"解码token异常[网关]\"\n}",
+    "x-acgw-identity示例：\n\ndjF8MTkyMmQ3YmI5ZDkwMzFlMjE1MDF8NDg4MTI2NDExOTk0MHw6V2LYE7CV5A6x4MzeVf1JgmRVuPMHnuyDv2ZiJ-mVx3w="
+  ]
+}

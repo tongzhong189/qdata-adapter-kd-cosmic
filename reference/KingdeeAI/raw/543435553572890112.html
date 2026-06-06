@@ -1,0 +1,37 @@
+<h2 label="一级标题" class="first-title" style="">一、基本认证介绍</h2><p style="">    OpenAPI基本认证，是结合了HTTPS Basic Authentication 的一种认证方式，在通过基本认证登录系统并调用接口的过程中，需要在请求的URL参数或请求header中带上openApiSign凭证，形式如下： {host}?openApiSign=xxx，该凭证是由第三方应用、代理用户和当前数据中心ID组合并加密生成的base64编码，可以作为访问开放平台OpenAPI 的固定认证密钥。基本认证作为接口匿名访问的一种更安全和方便的替代方案，可以广泛应用于接口回调的场景。</p><p style="">    注意：<span style="color: rgb(255, 0, 0);">当第三方应用启用基本认证后，由于基本认证密钥是长期有效的，必须配合API授权来保证系统整体安全。</span></p><p style=""><br/></p><h2 label="一级标题" class="first-title" style="">二、基本认证配置</h2><ol class=" list-paddingleft-2" style="list-style-type: decimal;"><li><p style="">进入第三方应用，访问策略添加基本认证：</p><p style=""><img src="/download/01099ca66790c68b4a4b85afbcc6f3194fc1.png"/><br/></p><p><br/></p></li><li><p style="">编辑基本认证策略，选择基本认证用户，点击确认后，<span style="color: rgb(227, 108, 9);">并保存单据（务必点击保存，否则基本认证不生效）</span>。</p><p style=""><img src="https://vip-admin.kingdee.com/download/01090d1ba51e8c2342c6b0e9560bc4c15e60.png"/><br/></p><p><br/></p></li><li><p style="">进行API授权，<span style="background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);">用户需对第三方应用进行 </span><span class="s11" style="background-color: rgb(255, 255, 255); color: rgb(218, 86, 12); font-weight: 700;">原厂服务包</span><span style="background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);"> 或 </span><span class="s11" style="background-color: rgb(255, 255, 255); color: rgb(218, 86, 12); font-weight: 700;">租户自建API</span><span style="background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);"> 进行访问授权后第三方应用才可正常访问相关API，授权操作是配置可访问的接口范围。</span></p><p style="background-color: rgb(255, 255, 255);"><span style="color: rgb(227, 108, 9);">1. 服务授权：针对原厂标准API所组成的服务包进行授权，服务包有任何更新时可无感知实时更新权限；</span></p><p style="background-color: rgb(255, 255, 255);"><span style="color: rgb(227, 108, 9);">2. 自建API授权：针对项目二开自建API进行授权；</span></p><p style="background-color: rgb(255, 255, 255);"><span style="color: rgb(227, 108, 9);"><img src="/download/0109097bb5eb66ee417d91e9a65b8e856592.png"/></span></p><p><br/></p></li><li><p style="background-color: rgb(255, 255, 255);"><span style="color:#000000">自行组装已授权API的调用url，在请求URL后追加query参数，示例可见<三、接口调用示例>；<br/></span></p><p><br/></p></li><li><p>同时，OpenAPI也提供了快捷生成回调地址的方案，通过API详情中的回调地址配置：</p><p><img src="https://vip-admin.kingdee.com/download/01098edd3f79906f4a05978dfb634d4ac8dd.png"/></p><p><strong><span style="color: rgb(227, 108, 9);">注意：如若在生成回调地址前，未通过第三方应用进行服务授权或自建API授权，该回调地址的调用可能会出现<<span style="color: rgb(255, 0, 0);">应用未订阅该API[网关]</span>>的异常报错，故在生成回调地之前，请务必先进行授权操作！！！</span></strong></p></li></ol><h2 label="一级标题" class="first-title" style="">三、接口<span style="">调用</span>示例</h2><h3 label="二级标题" class="second-title" style="">1) <span style="font-weight: 700;">公共参数</span></h3><p style=""><span style="font-weight: 700;"></span></p><p style="color: rgb(0, 0, 0); text-align: justify;"><span style="font-weight: 700;"></span></p><p class="p1" style="text-align: justify; font-size: 12px; color: rgb(0, 0, 0);"><span style="font-size: 15px;"><strong style="">请求头参数</strong></span></p><table width="767.3" class="t1" style=""><tbody style=""><tr style="" class="firstRow ueditor-new-first-row"><td valign="middle" class="td1" style=""><p class="p2" style="font-size: 12px; color: rgb(0, 0, 0);"><span style="font-size: 15px;"><strong style="">传入参数</strong></span></p></td><td valign="middle" class="td2" style=""><p class="p2" style="font-size: 12px; color: rgb(0, 0, 0);"><span style="font-size: 15px;"><strong style="">字段类型</strong></span></p></td><td valign="top" class="td3" style=""><p class="p2" style="font-size: 12px; color: rgb(0, 0, 0);"><span style="font-size: 15px;"><strong style="">是否必填</strong></span></p></td><td valign="middle" class="td4" style=""><p class="p2" style="font-size: 12px; color: rgb(0, 0, 0);"><span style="font-size: 15px;"><strong style="">字段说明</strong></span></p></td></tr><tr style=""><td valign="middle" class="td1" style=""><p class="p3" style="font-size: 12px; color: rgb(0, 0, 0);"><span style="font-size: 15px;">x-acgw-Identity</span></p></td><td valign="middle" class="td2" style=""><p class="p3" style="font-size: 12px; color: rgb(0, 0, 0);"><span style="font-size: 15px;">string</span></p></td><td valign="middle" class="td3" style=""><p class="p2" style="font-size: 12px; color: rgb(0, 0, 0);"><span style="font-size: 15px;">是</span></p></td><td valign="middle" class="td4" style=""><p class="p2" style="font-size: 12px; color: rgb(0, 0, 0);"><span style="font-size: 15px;">应用身份标识，第三方应用启用后自动生成</span></p></td></tr><tr style=""><td valign="middle" class="td1" style=""><p class="p3" style="font-size: 12px; color: rgb(0, 0, 0);"><span style="font-size: 15px;">openApiSign</span></p><p class="p3" style="font-size: 12px; color: rgb(0, 0, 0);"><span style="font-size: 15px;"><br/></span></p></td><td valign="middle" class="td2" style=""><p class="p3" style="font-size: 12px; color: rgb(0, 0, 0);"><span style="font-size: 15px;">string</span></p></td><td valign="middle" class="td3" style=""><p class="p2" style="font-size: 12px; color: rgb(0, 0, 0);"><span style="font-size: 15px;">是</span></p></td><td valign="middle" class="td4" style=""><p class="p2" style="font-size: 12px; color: rgb(0, 0, 0);"><span style="font-size: 15px;">基本认证凭证</span></p></td></tr></tbody></table><p class="p4" style="font-size: 12px; color: rgb(0, 0, 0);"><span class="s1" style=""><br/></span></p><h3 label="二级标题" class="second-title" style=""><span style="font-weight: 700;">2）请求示例</span></h3><pre class="ueditor-code-area brush:js;toolbar:false" style="">URL：http://{{localhost}}/kapi/v2/kdtest/gl/gl_voucher/gl_voucher?billno=cugyi5&pageSize=10&pageno=1&openApiSign=Slh4bFF3Mnh0LXZLUE9fRUtzRnItc2JTblgyM0RtNk9RN2V5ODR2WU13QT06MTMzMTIwNDQ0NTk5NTc5NDQzbg==&x-acgw-Identity={第三方应用身份标识}
+
+请求Header参数：
+Content-Type=application/json
+
+请求结果：
+{
+    "data": {
+        "lastPage": true,
+        "pageNo": 1,
+        "pageSize": 10,
+        "rows": [
+            {
+                "id": "1393492185164283904",
+                "billno": "cugyi5",
+                "entries": [
+                    {
+                        "id": "1393492186380632064",
+                        "assgrp": {
+                            "id": "1393492186061865984",
+                            "供应商": {
+                                "name": "唐山金属材料有限公司",
+                                "number": "SUP000001",
+                                "id": "346159251409862656"
+                            },
+                            "文本弹性域": "其他"
+                        }
+                    }
+                ]
+            }
+        ],
+        "totalCount": 1
+    },
+    "errorCode": "0",
+    "message": "",
+    "status": true
+}</pre><p style=""><br/></p><p style="">当金蝶AI苍穹与外围系统对接时，若存在某个接口回调场景，对方系统接口协议规定：访问路径需要为固定接口且不可以添加参数，或在接口访问路径中不允许有“?”，金蝶AI苍穹开放平台回调接口可使用如下格式：</p><pre class="ueditor-code-area brush:java;toolbar:false" style=""> http://{{localhost}}/$/openApiSign/xxx/billno/cugyi5/pageSize/10/pageno/1</pre><p style=""><span style="color: rgb(255, 0, 0);">注意：URL中openApiSign必须在特殊符号“$”后，在其他URL参数前。</span></p><p><br/></p>

@@ -1,0 +1,24 @@
+{
+  "version": "1.0",
+  "platform_code": "Kingdee.AI",
+  "platform_name": "金蝶星空AI",
+  "extracted_at": "2026-06-05T10:12:06.983288Z",
+  "crawler_info": {
+    "crawler_name": "kingdee_ai_crawler",
+    "crawler_version": "1.0.0",
+    "crawl_started_at": "2026-06-05T18:08:45.054732",
+    "crawl_finished_at": "2026-06-05T18:12:06.983301",
+    "login_mode": "webbridge_browser",
+    "login_note": "使用 Kimi WebBridge 通过用户已登录的浏览器提取数据"
+  },
+  "stats": {
+    "total_docs": 24,
+    "crawled_docs": 24,
+    "failed_docs": 0
+  },
+  "file_count": 24,
+  "source_urls": [
+    "https://vip.kingdee.com/knowledge/555401045317338880?productLineId=40&isKnowledge=2&lang=zh-CN"
+  ],
+  "format_version": "1.0"
+}

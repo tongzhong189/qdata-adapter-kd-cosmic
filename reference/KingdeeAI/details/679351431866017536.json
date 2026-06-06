@@ -1,0 +1,252 @@
+{
+  "code": "679351431866017536",
+  "name": "异步API",
+  "category": "异步API",
+  "description": "知识转载自金蝶AI苍穹·开放平台，作者：某个路易",
+  "method": "POST",
+  "request_params": [
+    {
+      "field": "queryOpenApiType",
+      "description": "查询类型",
+      "example": "checkStatus"
+    },
+    {
+      "field": "openApiReqId",
+      "description": "异步请求id",
+      "example": "2035642993280551936"
+    },
+    {
+      "field": "queryOpenApiType",
+      "description": "查询类型",
+      "example": "queryResult"
+    },
+    {
+      "field": "openApiReqId",
+      "description": "异步请求id",
+      "example": "2035642993280551936"
+    }
+  ],
+  "response_params": [
+    {
+      "field": "API基本信息"
+    },
+    {
+      "field": "API编码"
+    },
+    {
+      "field": "API名称"
+    },
+    {
+      "field": "请求方式"
+    },
+    {
+      "field": "业务对象"
+    },
+    {
+      "field": "所属应用"
+    },
+    {
+      "field": "分组"
+    },
+    {
+      "field": "操作方式"
+    },
+    {
+      "field": "使用状态"
+    },
+    {
+      "field": "适用版本号"
+    },
+    {
+      "field": "接口类型"
+    },
+    {
+      "field": "请求地址"
+    },
+    {
+      "field": "完整服务地址"
+    },
+    {
+      "field": "详细描述"
+    },
+    {
+      "field": "第三方应用授权"
+    },
+    {
+      "field": "出参仅返回Data域"
+    },
+    {
+      "field": "是否脱敏"
+    },
+    {
+      "field": "防止重复请求"
+    },
+    {
+      "field": "WebService信息"
+    },
+    {
+      "field": "命名空间"
+    },
+    {
+      "field": "输入参数名"
+    },
+    {
+      "field": "输出参数名"
+    },
+    {
+      "field": "WSDL方法名"
+    },
+    {
+      "field": "请求头部"
+    },
+    {
+      "field": "参数名称"
+    },
+    {
+      "field": "参数值"
+    },
+    {
+      "field": "说明"
+    },
+    {
+      "field": "请求体"
+    },
+    {
+      "field": "参数名称"
+    },
+    {
+      "field": "对象属性"
+    },
+    {
+      "field": "参数类型"
+    },
+    {
+      "field": "必填"
+    },
+    {
+      "field": "默认值"
+    },
+    {
+      "field": "说明"
+    },
+    {
+      "field": "层级"
+    },
+    {
+      "field": "示例"
+    },
+    {
+      "field": "参数控制"
+    },
+    {
+      "field": "参数项"
+    },
+    {
+      "field": "说明"
+    },
+    {
+      "field": "值"
+    },
+    {
+      "field": "返回参数"
+    },
+    {
+      "field": "参数名称"
+    },
+    {
+      "field": "参数类型"
+    },
+    {
+      "field": "说明"
+    },
+    {
+      "field": "示例"
+    },
+    {
+      "field": "错误码"
+    },
+    {
+      "field": "单据头"
+    },
+    {
+      "field": "保存"
+    },
+    {
+      "field": "API测试"
+    },
+    {
+      "field": "退出"
+    },
+    {
+      "field": "请求头"
+    },
+    {
+      "field": "增行"
+    },
+    {
+      "field": "删行"
+    },
+    {
+      "field": "上移"
+    },
+    {
+      "field": "下移"
+    },
+    {
+      "field": "参数示例"
+    },
+    {
+      "field": "请求体"
+    },
+    {
+      "field": "添加属性"
+    },
+    {
+      "field": "参数示例"
+    },
+    {
+      "field": "增行"
+    },
+    {
+      "field": "删行"
+    },
+    {
+      "field": "上移"
+    },
+    {
+      "field": "下移"
+    },
+    {
+      "field": "填充示例数据"
+    },
+    {
+      "field": "参数控制"
+    },
+    {
+      "field": "选择默认参数"
+    },
+    {
+      "field": "新增"
+    },
+    {
+      "field": "删除"
+    },
+    {
+      "field": "返回参数"
+    },
+    {
+      "field": "参数示例"
+    },
+    {
+      "field": "错误码"
+    },
+    {
+      "field": "增行"
+    },
+    {
+      "field": "删行"
+    }
+  ],
+  "error_codes": [],
+  "examples": []
+}

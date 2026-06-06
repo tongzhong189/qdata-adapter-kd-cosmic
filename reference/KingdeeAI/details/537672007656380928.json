@@ -1,0 +1,262 @@
+{
+  "code": "537672007656380928",
+  "name": "认证方式-增强型Token认证",
+  "category": "认证指南",
+  "description": "",
+  "method": "POST",
+  "request_params": [
+    {
+      "field": "Content-Type",
+      "type": "String",
+      "description": "内容格式，传入application/json"
+    },
+    {
+      "field": "Content-Type",
+      "type": "String",
+      "description": "内容格式，传入application/json"
+    },
+    {
+      "field": "client_id",
+      "type": "String",
+      "description": "第三方应用系统编码，即appId"
+    },
+    {
+      "field": "token_type_hint",
+      "type": "String",
+      "description": "令牌类型，access_token/refresh_token/id_token"
+    },
+    {
+      "field": "token",
+      "type": "String",
+      "description": "令牌值"
+    },
+    {
+      "field": "accountId",
+      "type": "String",
+      "description": "数据中心id"
+    },
+    {
+      "field": "nonce",
+      "type": "String",
+      "description": "随机数"
+    },
+    {
+      "field": "timestamp",
+      "type": "String",
+      "description": "时间戳，当前时间前后5分钟"
+    },
+    {
+      "field": "Content-Type",
+      "type": "String",
+      "description": "内容格式，传入application/json"
+    },
+    {
+      "field": "client_id",
+      "type": "String",
+      "description": "第三方应用系统编码，即appId"
+    },
+    {
+      "field": "client_secret",
+      "type": "String",
+      "description": "第三方应用AccessToken认证密钥，即appSecret"
+    },
+    {
+      "field": "token_type_hint",
+      "type": "String",
+      "description": "令牌类型，access_token/refresh_token/id_token"
+    },
+    {
+      "field": "token",
+      "type": "String",
+      "description": "令牌值"
+    },
+    {
+      "field": "accountId",
+      "type": "String",
+      "description": "数据中心id"
+    },
+    {
+      "field": "nonce",
+      "type": "String",
+      "description": "随机数"
+    },
+    {
+      "field": "timestamp",
+      "type": "String",
+      "description": "时间戳，当前时间前后5分钟"
+    }
+  ],
+  "response_params": [
+    {
+      "field": "获取access_token令牌",
+      "description": "获取请求令牌access_token，在第三方应用中启用JWT token后还会返回id_token，均可用于访问接口"
+    },
+    {
+      "field": "检测令牌有效性",
+      "description": "检测access_token有效性及过期时间，检测JWT token(id_token)有效性"
+    },
+    {
+      "field": "撤回密钥令牌",
+      "description": "撤回access_token"
+    },
+    {
+      "field": "client_id",
+      "type": "String",
+      "description": "第三方应用系统编码，即appId"
+    },
+    {
+      "field": "client_secret",
+      "type": "String",
+      "description": "第三方应用AccessToken认证密钥，即appSecret"
+    },
+    {
+      "field": "username",
+      "type": "String",
+      "description": "第三方应用代理用户的用户名"
+    },
+    {
+      "field": "accountId",
+      "type": "String",
+      "description": "数据中心id"
+    },
+    {
+      "field": "language",
+      "type": "String",
+      "description": "语言字串： zh_CN，zh_TW、en_US等。 默认系统默认语言，查询接口会返回对应的多语言文本字段"
+    },
+    {
+      "field": "nonce",
+      "type": "String",
+      "description": "随机数，10分钟内不可重复"
+    },
+    {
+      "field": "timestamp",
+      "type": "String",
+      "description": "时间戳，当前时间前后5分钟"
+    },
+    {
+      "field": "data",
+      "type": "",
+      "description": ""
+    },
+    {
+      "field": "- access_token",
+      "type": "String",
+      "description": "请求令牌，第三方应用调用OpenAPI的凭证"
+    },
+    {
+      "field": "- token_type",
+      "type": "String",
+      "description": "令牌类型，默认为Bearer，即任何持有token的用户都可以访问对应的资源"
+    },
+    {
+      "field": "- refresh_token",
+      "type": "String",
+      "description": "刷新令牌，使用refresh_token 去刷新获得新的access_token，只能使用1次"
+    },
+    {
+      "field": "- scope",
+      "type": "String",
+      "description": "作用域，用户授权给第三方的权限，默认为API"
+    },
+    {
+      "field": "- expires_in",
+      "type": "Int",
+      "description": "access_token的有效期，即距离过期的剩余时长（单位：毫秒）"
+    },
+    {
+      "field": "- id_token",
+      "type": "String",
+      "description": "JWT（Json Web Token）"
+    },
+    {
+      "field": "- id_token_expires_in",
+      "type": "Int",
+      "description": "JWT的有效期，即距离过期的剩余时长（单位：毫秒）"
+    },
+    {
+      "field": "- language",
+      "type": "String",
+      "description": "浏览器接收语言"
+    },
+    {
+      "field": "errorCode",
+      "type": "String",
+      "description": "错误码，成功时为0"
+    },
+    {
+      "field": "message",
+      "type": "String",
+      "description": "错误消息"
+    },
+    {
+      "field": "status",
+      "type": "Boolean",
+      "description": "请求状态，true/false"
+    },
+    {
+      "field": "data",
+      "type": "",
+      "description": ""
+    },
+    {
+      "field": "- expires_in",
+      "type": "Int",
+      "description": "令牌的有效期，即距离过期的剩余时长（单位：毫秒）"
+    },
+    {
+      "field": "- active",
+      "type": "Boolean",
+      "description": "是否有效，true/false"
+    },
+    {
+      "field": "- scope",
+      "type": "String",
+      "description": "作用域，用户授权给第三方的权限，默认为API"
+    },
+    {
+      "field": "errorCode",
+      "type": "String",
+      "description": "错误码，成功时为0"
+    },
+    {
+      "field": "message",
+      "type": "String",
+      "description": "错误消息"
+    },
+    {
+      "field": "status",
+      "type": "Boolean",
+      "description": "请求状态，true/false"
+    },
+    {
+      "field": "data",
+      "type": "",
+      "description": ""
+    },
+    {
+      "field": "errorCode",
+      "type": "String",
+      "description": "错误码，成功时为0"
+    },
+    {
+      "field": "message",
+      "type": "String",
+      "description": "错误消息"
+    },
+    {
+      "field": "status",
+      "type": "Boolean",
+      "description": "请求状态，true/false"
+    }
+  ],
+  "error_codes": [],
+  "examples": [
+    "请求Header参数：\nContent-Type=application/json\n\n请求Body参数：\n{\n    \"client_id\": \"thirdappunittest_003\",\n    \"client_secret\": \"Abcdrty@1234567890#@2\",\n    \"username\":\"zhangSan\",\n    \"accountId\": \"1355633519610561531\",\n    \"language\": \"zh_CN\",\n    \"nonce\": \"123\",\n    \"timestamp\": \"2023-09-08 11:47:00\"\n}",
+    "{\n\"data\": {\n    \"access_token\":\"OPENAPIAUTH_MTMzMTIwNDQ0NTk5NTc5NDQzMl9FZ3h4MXU1Zzd2Qk9kRjR4MzIxQXZKcXU5c2hpbzNCaTRtTGIzbEsyM3JnbmFJUUJEMEltZUt3UURYQmFFdDJIVnc3MWtyaTVUR01ZbTRDUGVETDVSamE2R0F1a2g5SGpVcmwx\",\n    \"token_type\": \"Bearer\",\n    \"refresh_token\": \"d367106c-de46-4fc4-9e1a-59cbcfc430d2\",\n    \"scope\": \"API\",\n    \"expires_in\": \"7199977\",\n    \"id_token\": \"OPENAPIAUTH_ZXlKMGVYQWlPaUpLVjFRaUxDSmhiR2NpT2lKSVV6STFOaUo5LmV5Sm1hV1FpT2lJeE16UTJOamN6T1NJc0luTjFZaUk2SW10a2FuZDBJaXdpWm5Cb2IyNWxJam9pTVRjeU9UazVPVGs1T1RraUxDSmxhV1FpT2lJeE1UUTNOVFl4TnlJc0ltWjBjblZsYm1GdFpTSTZJa2xGVWxBaUxDSm1iM0puYVdRaU9pSXhJaXdpWm1WdFlXbHNJam9pYVdWeWNFQnJhVzVuWkdWbExtTnZiU0lzSW1semN5STZJbXRrSWl3aWRYTmxjbWxrSWpvaU1UTTBOalkzTXpraUxDSm1ZbWw2Y0dGeWRHNWxjbWxrSWpvaU1DSXNJbVpzWVhOMGJHOW5hVzVwY0NJNklqRTNNaTR5TUM0eE5DNDJOeUlzSW1acGMyRmpkR2wyWldRaU9pSXhJaXdpWm05d1pXNXBaQ0k2SWpWaE1tUmxabU5pWlRSaU1EazFOMlpoTURobU9HTTNNaUlzSW1ac1lYTjBiRzluYVc1MGFXMWxJam9pTWpBeU15MHdPQzB5T1NBd01Eb3dNRG93TUM0d0lpd2labVZ1WVdKc1pTSTZJakVpTENKbWRXbGtJam9pTVRNME5qWTNNemtpTENKMWMyVnlWSGx3WlNJNklqRWlMQ0psZUhBaU9qRTJPVFEyTURReU1UZ3NJbWxoZENJNk1UWTVORFU1TnpBeE9Dd2labWx6Y21WbmFYTjBaV1FpT2lJeElpd2labkJ6ZDNOMGNtRjBaV2Q1YVdRaU9pSTNOakk1TnpjM09UVTNOekl3TURVek56WWlMQ0oxYzJWeWIzQmxibWxrSWpvaU5XRXlaR1ZtWTJKbE5HSXdPVFUzWm1Fd09HWTRZemN5SWl3aWRYTmxjbTVoYldVaU9pSkpSVkpRSW4wLi1ZZEd1cWhIX25Mcm5ibURnQTlfU2FvQkZsTGJWTTJEUmp2cnR4NXZwckk=\",\n    \"id_token_expires_in\": \"7199977\",\n    \"language\": \"zh_CN\"\n        },\n    \"errorCode\": \"0\",\n    \"message\": \"\",\n    \"status\": true\n}",
+    "请求Header参数：\nContent-Type=application/json\n\n请求Body参数：\n{\n  \"client_id\": \"thirdappunittest_003\",\n  \"token_type_hint\": \"access_token\",\n    \"token\":\"OPENAPIAUTH_MTMzMTIwNDQ0NTk5NTc5NDQzMl9peGdobmxERWluY1FpZDc2R2pjUDcyYlg0UTNwNDhpczZXM01NYTlsTDVhNEU2TFRkT0ZIWTlybUl5SDdvQUJ1ZGFSaGtWU0hGNlNRRTBjMjZ6MkxxQWRjbkNpTzBnd1ZzMW9P\",\n  \"nonce\": \"1234\",\n  \"timestamp\": \"2023-09-15 16:14:00\",\n  \"accountId\": \"1331204445995794432\"\n}",
+    "{\n    \"data\": {\n    \"expires_in\": \"7133040\",\n    \"active\": true,\n    \"scope\": \"API\"\n    },\n    \"errorCode\": \"0\",\n    \"message\": \"\",\n    \"status\": true\n}",
+    "请求Header参数：\nContent-Type=application/json\n\n请求Body参数：\n{\n    \"client_id\": \"thirdappunittest_003\",\n    \"client_secret\": \"Abcdrty@1234567890#@2\",\n    \"token_type_hint\": \"access_token\",\n    \"token\":\"OPENAPIAUTH_MTMzMTIwNDQ0NTk5NTc5NDQzMl9peGdobmxERWluY1FpZDc2R2pjUDcyYlg0UTNwNDhpczZXM01NYTlsTDVhNEU2TFRkT0ZIWTlybUl5SDdvQUJ1ZGFSaGtWU0hGNlNRRTBjMjZ6MkxxQWRjbkNpTzBnd1ZzMW9P\",\n    \"nonce\": \"12345\",\n    \"timestamp\": \"2023-09-15 16:29:00\",\n    \"accountId\": \"1331204445995794432\"\n}",
+    "{\n    \"data\": true,\n    \"errorCode\": \"0\",\n    \"message\": \"true\",\n    \"status\": true\n}"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "code": "555402573956304640",
+  "name": "保存操作API（多选基础资料）",
+  "category": "操作API",
+  "description": "知识转载自金蝶AI苍穹·开放平台，作者：某个路易",
+  "method": "POST",
+  "request_params": [],
+  "response_params": [],
+  "error_codes": [],
+  "examples": []
+}

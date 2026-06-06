@@ -1,4 +1,10 @@
-# 忽略 reference 目录下 所有文件和文件夹
+# 忽略 reference 目录下其他未明确保留的文件和文件夹
 *
-# 但是强制保留当前 .gitignore 本身
+# 强制保留当前 .gitignore 本身
 !.gitignore
+# 保留历史 PHP 实现
+!old_php/
+!old_php/**
+# 保留金蝶 AI 接口文档
+!KingdeeAI/
+!KingdeeAI/**

@@ -1,0 +1,11 @@
+{
+  "code": "788778229871437568",
+  "name": "查询操作API支持权限全量校验",
+  "category": "操作API",
+  "description": "",
+  "method": "POST",
+  "request_params": [],
+  "response_params": [],
+  "error_codes": [],
+  "examples": []
+}

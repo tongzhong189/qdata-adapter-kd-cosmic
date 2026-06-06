@@ -1,0 +1,13 @@
+{
+  "code": "555410900706709248",
+  "name": "删除操作API",
+  "category": "操作API",
+  "description": "知识转载自金蝶AI苍穹·开放平台，作者：某个路易",
+  "method": "POST",
+  "request_params": [],
+  "response_params": [],
+  "error_codes": [],
+  "examples": [
+    "{\n    “data”: {\t\t\t//结果数据\n        \"filter\":\"\",\t\t//过滤条件\n        \"result\": [],\t\t//返回结果详细信息\n        \"totalCount\":\"\",\t//总数\n        “failcount”: “”,\t//操作失败数量\n        “successcount”: “”\t//操作成功数量\n    }\n    “errorCode”: “”,\t\t//错误码\n    “message”: null,\t\t//失败时的提示信息\n    “status”: true/false\t//是否成功\n}"
+  ]
+}

@@ -1,0 +1,83 @@
+{
+  "code": "555677615223029248",
+  "name": "金蝶AI星空OpenAPI开发规范",
+  "category": "开发规范",
+  "description": "1. 接口规范",
+  "method": "POST",
+  "request_params": [
+    {
+      "field": "string",
+      "required": "是",
+      "description": "请求报文的入参格式，如application/json、application/xml 等"
+    },
+    {
+      "field": "string",
+      "required": "是",
+      "description": "获取的accesstoken值，用于接口访问鉴权"
+    },
+    {
+      "field": "long",
+      "required": "否",
+      "description": "唯一的requestId，有效时间30分钟。当调用接口时，系统识别到重复的 Idempotency-Key，会拒绝请求"
+    },
+    {
+      "field": "string",
+      "required": "是",
+      "description": "调用API的身份标识，第三方应用启用后自动颁发"
+    }
+  ],
+  "response_params": [
+    {
+      "field": "Integer",
+      "required": "否",
+      "description": "查询接口分页时填写，如查第1页，则传入1"
+    },
+    {
+      "field": "Integer",
+      "required": "是",
+      "description": "查询接口分页时填写，如每页返回10条数据，则传入10"
+    },
+    {
+      "field": "Object",
+      "description": "{}"
+    },
+    {
+      "field": "String",
+      "description": "成功时为0，失败时会返回错误码如400"
+    },
+    {
+      "field": "String",
+      "description": "成功时为空，失败时会返回错误信息如“操作失败”"
+    },
+    {
+      "field": "Boolean",
+      "description": "true/false"
+    },
+    {
+      "field": "List",
+      "description": "[]"
+    },
+    {
+      "field": "Integer",
+      "description": "若为1，则查询的是第1页"
+    },
+    {
+      "field": "Integer",
+      "description": "若为10，则每页返回10条数据"
+    },
+    {
+      "field": "string",
+      "description": "查询接口的过滤条件，既执行逻辑"
+    },
+    {
+      "field": "Boolean",
+      "description": "true/false"
+    },
+    {
+      "field": "Integer",
+      "description": "接口查询总条数"
+    }
+  ],
+  "error_codes": [],
+  "examples": []
+}

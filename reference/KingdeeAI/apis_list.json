@@ -1,0 +1,200 @@
+{
+  "platform_code": "Kingdee.AI",
+  "platform_name": "金蝶星空AI",
+  "version": "1.0",
+  "extracted_at": "2026-06-05T10:12:06.982077Z",
+  "total_count": 24,
+  "format_version": "1.0",
+  "apis": [
+    {
+      "code": "555316763412680192",
+      "name": "操作API介绍",
+      "category": "操作API",
+      "url": "https://vip.kingdee.com/knowledge/555316763412680192?specialId=272110040385964032&productLineId=40&isKnowledge=2&lang=zh-CN",
+      "sidebar_id": "555317810646429952"
+    },
+    {
+      "code": "555395543061704960",
+      "name": "操作API敏感数据脱敏",
+      "category": "操作API",
+      "url": "https://vip.kingdee.com/knowledge/555395543061704960?specialId=272110040385964032&productLineId=40&isKnowledge=2&lang=zh-CN",
+      "sidebar_id": "555396694934898432"
+    },
+    {
+      "code": "555400185669328896",
+      "name": "查询操作API",
+      "category": "操作API",
+      "url": "https://vip.kingdee.com/knowledge/555400185669328896?specialId=272110040385964032&productLineId=40&isKnowledge=2&lang=zh-CN",
+      "sidebar_id": "555400678969892096"
+    },
+    {
+      "code": "788778229871437568",
+      "name": "查询操作API支持权限全量校验",
+      "category": "操作API",
+      "url": "https://vip.kingdee.com/knowledge/788778229871437568?specialId=272110040385964032&productLineId=40&isKnowledge=2&lang=zh-CN",
+      "sidebar_id": "797482037937975040"
+    },
+    {
+      "code": "555401045317338880",
+      "name": "保存操作API",
+      "category": "操作API",
+      "url": "https://vip.kingdee.com/knowledge/555401045317338880?specialId=272110040385964032&productLineId=40&isKnowledge=2&lang=zh-CN",
+      "sidebar_id": "555401504677637888"
+    },
+    {
+      "code": "555401833695722752",
+      "name": "保存操作API（弹性域）",
+      "category": "操作API",
+      "url": "https://vip.kingdee.com/knowledge/555401833695722752?specialId=272110040385964032&productLineId=40&isKnowledge=2&lang=zh-CN",
+      "sidebar_id": "555401988800564992"
+    },
+    {
+      "code": "555402573956304640",
+      "name": "保存操作API（多选基础资料）",
+      "category": "操作API",
+      "url": "https://vip.kingdee.com/knowledge/555402573956304640?specialId=272110040385964032&productLineId=40&isKnowledge=2&lang=zh-CN",
+      "sidebar_id": "555408363203612160"
+    },
+    {
+      "code": "555410900706709248",
+      "name": "删除操作API",
+      "category": "操作API",
+      "url": "https://vip.kingdee.com/knowledge/555410900706709248?specialId=272110040385964032&productLineId=40&isKnowledge=2&lang=zh-CN",
+      "sidebar_id": "555411539147021568"
+    },
+    {
+      "code": "555412671055372288",
+      "name": "提交操作API",
+      "category": "操作API",
+      "url": "https://vip.kingdee.com/knowledge/555412671055372288?specialId=272110040385964032&productLineId=40&isKnowledge=2&lang=zh-CN",
+      "sidebar_id": "555413158769479168"
+    },
+    {
+      "code": "555414025781956352",
+      "name": "撤销操作API",
+      "category": "操作API",
+      "url": "https://vip.kingdee.com/knowledge/555414025781956352?specialId=272110040385964032&productLineId=40&isKnowledge=2&lang=zh-CN",
+      "sidebar_id": "555414152987226368"
+    },
+    {
+      "code": "555420382836870912",
+      "name": "审核操作API",
+      "category": "操作API",
+      "url": "https://vip.kingdee.com/knowledge/555420382836870912?specialId=272110040385964032&productLineId=40&isKnowledge=2&lang=zh-CN",
+      "sidebar_id": "555421051157688064"
+    },
+    {
+      "code": "555422413400062208",
+      "name": "反审核操作API",
+      "category": "操作API",
+      "url": "https://vip.kingdee.com/knowledge/555422413400062208?specialId=272110040385964032&productLineId=40&isKnowledge=2&lang=zh-CN",
+      "sidebar_id": "555422764077604096"
+    },
+    {
+      "code": "555423312944509184",
+      "name": "作废操作API",
+      "category": "操作API",
+      "url": "https://vip.kingdee.com/knowledge/555423312944509184?specialId=272110040385964032&productLineId=40&isKnowledge=2&lang=zh-CN",
+      "sidebar_id": "555440431928719616"
+    },
+    {
+      "code": "555677615223029248",
+      "name": "金蝶AI星空OpenAPI接口规范",
+      "category": "开发规范",
+      "url": "https://vip.kingdee.com/knowledge/555677615223029248?specialId=272110040385964032&productLineId=40&isKnowledge=2&lang=zh-CN",
+      "sidebar_id": "555706967918722560"
+    },
+    {
+      "code": "555677615223029248",
+      "name": "金蝶AI星空OpenAPI开发规范",
+      "category": "开发规范",
+      "url": "https://vip.kingdee.com/knowledge/555677615223029248?specialId=272110040385964032&productLineId=40&isKnowledge=2&lang=zh-CN",
+      "sidebar_id": "555673770153992192"
+    },
+    {
+      "code": "646787188905978624",
+      "name": "金蝶AI星空OpenAPI错误码说明",
+      "category": "开发规范",
+      "url": "https://vip.kingdee.com/knowledge/646787188905978624?specialId=272110040385964032",
+      "sidebar_id": "647143239866363392"
+    },
+    {
+      "code": "555708375561196544",
+      "name": "OpenAPI保存接口特殊场景开发指南",
+      "category": "开发规范",
+      "url": "https://vip.kingdee.com/knowledge/555708375561196544?specialId=272110040385964032&productLineId=40&isKnowledge=2&lang=zh-CN",
+      "sidebar_id": "555708711810097152"
+    },
+    {
+      "code": "524631518480966400",
+      "name": "OpenAPI开发认证指南(金蝶AI星空)",
+      "category": "认证指南",
+      "url": "https://vip.kingdee.com/knowledge/524631518480966400?specialId=272110040385964032&productLineId=40&isKnowledge=2&lang=zh-CN",
+      "sidebar_id": "524887980440560384"
+    },
+    {
+      "code": "537672007656380928",
+      "name": "认证方式-增强型Token认证",
+      "category": "认证指南",
+      "url": "https://vip.kingdee.com/knowledge/537672007656380928?specialId=272110040385964032&productLineId=40&isKnowledge=2&lang=zh-CN",
+      "sidebar_id": "537673839543818752"
+    },
+    {
+      "code": "537675769762560000",
+      "name": "认证方式-Accesstoken认证/JWT认证",
+      "category": "认证指南",
+      "url": "https://vip.kingdee.com/knowledge/537675769762560000?specialId=272110040385964032&productLineId=40&isKnowledge=2&lang=zh-CN",
+      "sidebar_id": "537679549451180544"
+    },
+    {
+      "code": "537942044145205760",
+      "name": "认证方式-摘要认证",
+      "category": "认证指南",
+      "url": "https://vip.kingdee.com/knowledge/537942044145205760?specialId=272110040385964032&productLineId=40&isKnowledge=2&lang=zh-CN",
+      "sidebar_id": "537944561650473472"
+    },
+    {
+      "code": "543364912198830592",
+      "name": "认证方式-签名认证",
+      "category": "认证指南",
+      "url": "https://vip.kingdee.com/knowledge/543364912198830592?specialId=272110040385964032&productLineId=40&isKnowledge=2&lang=zh-CN",
+      "sidebar_id": "543434745129060864"
+    },
+    {
+      "code": "543435553572890112",
+      "name": "认证方式-基本认证",
+      "category": "认证指南",
+      "url": "https://vip.kingdee.com/knowledge/543435553572890112?specialId=272110040385964032&productLineId=40&isKnowledge=2&lang=zh-CN",
+      "sidebar_id": "543436396007115264"
+    },
+    {
+      "code": "679351431866017536",
+      "name": "异步API",
+      "category": "异步API",
+      "url": "https://vip.kingdee.com/knowledge/679351431866017536?specialId=272110040385964032&productLineId=40&isKnowledge=2&lang=zh-CN",
+      "sidebar_id": "679353446239165440"
+    }
+  ],
+  "categories": [
+    {
+      "name": "操作API",
+      "code": "操作API",
+      "api_count": 13
+    },
+    {
+      "name": "开发规范",
+      "code": "开发规范",
+      "api_count": 4
+    },
+    {
+      "name": "认证指南",
+      "code": "认证指南",
+      "api_count": 6
+    },
+    {
+      "name": "异步API",
+      "code": "异步API",
+      "api_count": 1
+    }
+  ]
+}
