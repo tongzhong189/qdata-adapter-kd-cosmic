@@ -148,6 +148,43 @@ class KdCosmicAdapter(BaseAppAdapter):
         await self.ensure_authenticated()
         return await self._interface.create_object(object_type, data)
 
+    async def execute_api(
+        self,
+        api_path: str,
+        data: dict[str, Any] | None = None,
+        method: str = "POST",
+    ) -> dict[str, Any]:
+        """
+        执行任意 API 接口
+
+        支持直接调用金蝶自定义路径的 API，如 /kapi/v2/ju06/ar/ar_finarbill/queryBi
+
+        Args:
+            api_path: API 完整路径，如 "/kapi/v2/ju06/ar/ar_finarbill/queryBi"
+            data: 请求体数据
+            method: HTTP 方法，默认 POST
+
+        Returns:
+            API 响应数据
+
+        Example:
+            >>> result = await adapter.execute_api(
+            ...     api_path="/kapi/v2/ju06/ar/ar_finarbill/queryBi",
+            ...     data={
+            ...         "data": {
+            ...             "auditdate": "2025-01-01 00:00:00",
+            ...             "billtype_number": "arfin_standard_BT_S"
+            ...         },
+            ...         "pageNo": 1,
+            ...         "pageSize": "10"
+            ...     }
+            ... )
+        """
+        await self.ensure_authenticated()
+        if hasattr(self._interface, "execute_api"):
+            return await self._interface.execute_api(api_path, data, method)
+        raise NotImplementedError("execute_api not supported by current interface")
+
     async def invoke(
         self,
         method: str,
@@ -158,20 +195,28 @@ class KdCosmicAdapter(BaseAppAdapter):
         """
         统一的 API 调用方法
 
+        支持通过 params._api_path 直接调用任意 API，绕过标准路径构造。
+
         Args:
             method: API 方法名，如 "query", "get", "create", "update", "delete"
-            object_type: 对象类型，如 "sys.pm_purorderbill"
+            object_type: 对象类型，如 "sys.pm_purorderbill" 或 "ju06.ar/ar_finarbill"
             data: 请求体数据（用于 create/update 等）
-            params: 查询参数（用于 query/get 等）
+            params: 查询参数（用于 query/get 等），支持：
+                - _api_path: 自定义 API 完整路径
+                - _api_version: API 版本前缀，如 "v2"
+                - _operation: 自定义操作类型，如 "queryBi"
 
         Returns:
             API 响应数据
         """
         await self.ensure_authenticated()
 
+        # 如果接口支持 invoke，优先使用
         if hasattr(self._interface, "invoke"):
             return await self._interface.invoke(method, object_type, data, params)
 
+        # 兜底路由
+        params = params or {}
         if method in ("list", "query"):
             results = []
             async for item in self._interface.list_objects(

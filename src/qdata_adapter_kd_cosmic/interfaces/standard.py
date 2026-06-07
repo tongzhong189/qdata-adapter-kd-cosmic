@@ -72,21 +72,30 @@ class KdCosmicAdapterStandardInterface(BaseInterface):
             return f"/oauth2/{path}"
         return f"/kapi/oauth2/{path}"
 
-    def _get_api_path(self, app_id: str, form_id: str, operation: str) -> str:
+    def _get_api_path(
+        self,
+        app_id: str,
+        form_id: str,
+        operation: str,
+        api_version: str = "",
+    ) -> str:
         """
         获取 API 路径
 
         Args:
             app_id: 应用标识，如 "sys"
-            form_id: 表单标识，如 "isc_demo_basedata_1"
-            operation: 操作类型，如 "query", "save"
+            form_id: 表单标识，如 "isc_demo_basedata_1"，支持层级如 "ar/ar_finarbill"
+            operation: 操作类型，如 "query", "save", "queryBi"
+            api_version: API 版本前缀，如 "v2"
 
         Returns:
             API 路径，如 "/kapi/sys/isc_demo_basedata_1/query"
+            或 "/kapi/v2/ju06/ar/ar_finarbill/queryBi"
         """
         has_kapi = "/kapi" in self._base_url
         prefix = "" if has_kapi else "/kapi"
-        return f"{prefix}/{app_id}/{form_id}/{operation}"
+        version_part = f"/{api_version}" if api_version else ""
+        return f"{prefix}{version_part}/{app_id}/{form_id}/{operation}"
 
     def _parse_object_type(self, object_type: str) -> tuple[str, str]:
         """
@@ -342,48 +351,65 @@ class KdCosmicAdapterStandardInterface(BaseInterface):
         列表查询（自动翻页）
 
         调用金蝶 OpenAPI 查询接口：POST /kapi/{appId}/{formId}/query
+        支持自定义 API 版本和操作类型。
 
         Args:
             object_type: 对象类型，格式 "app_id.form_id" 或纯 "form_id"
+                form_id 支持层级路径，如 "ju06.ar/ar_finarbill"
             filters: 过滤条件，支持：
                 - filterString: 过滤字符串
+                - _api_version: API 版本前缀，如 "v2"
+                - _operation: 操作类型，如 "queryBi"，默认 "query"
                 - 其他字段会放入 data 中
             page_size: 每页大小
 
         Yields:
             单条记录字典
         """
-        filters = filters or {}
+        filters = dict(filters) if filters else {}
         app_id, form_id = self._parse_object_type(object_type)
+
+        # 提取控制参数（不参与请求体）
+        api_version = filters.pop("_api_version", "")
+        operation = filters.pop("_operation", "query")
 
         page = 1
         has_more = True
 
         while has_more:
-            # 构建查询参数
-            query_data: dict[str, Any] = {
-                "formId": form_id,
-                "pageSize": page_size,
-                "pageNo": page,
-            }
+            if operation == "query":
+                # 标准 query 接口请求体格式
+                query_data: dict[str, Any] = {
+                    "formId": form_id,
+                    "pageSize": page_size,
+                    "pageNo": page,
+                }
 
-            # 提取 filterString 和其他参数
-            if "filterString" in filters:
-                query_data["filterString"] = filters["filterString"]
-            if "filter_string" in filters:
-                query_data["filterString"] = filters["filter_string"]
-            if "orderString" in filters:
-                query_data["orderString"] = filters["orderString"]
-            if "fieldKeys" in filters:
-                query_data["fieldKeys"] = filters["fieldKeys"]
+                # 提取 filterString 和其他参数
+                if "filterString" in filters:
+                    query_data["filterString"] = filters["filterString"]
+                if "filter_string" in filters:
+                    query_data["filterString"] = filters["filter_string"]
+                if "orderString" in filters:
+                    query_data["orderString"] = filters["orderString"]
+                if "fieldKeys" in filters:
+                    query_data["fieldKeys"] = filters["fieldKeys"]
 
-            # 其他自定义参数
-            for key, value in filters.items():
-                if key not in query_data and key not in ("app_id", "filter_string"):
-                    query_data[key] = value
+                # 其他自定义参数
+                for key, value in filters.items():
+                    if key not in query_data and key not in ("app_id", "filter_string"):
+                        query_data[key] = value
 
-            request_body = {"data": query_data}
-            api_path = self._get_api_path(app_id, form_id, "query")
+                request_body = {"data": query_data}
+            else:
+                # 非标准操作（如 queryBi），分页参数放根级，过滤条件放 data 内
+                request_body = {
+                    "data": dict(filters),
+                    "pageSize": str(page_size),
+                    "pageNo": page,
+                }
+
+            api_path = self._get_api_path(app_id, form_id, operation, api_version)
 
             try:
                 response = await self.http_client.post(
@@ -412,9 +438,14 @@ class KdCosmicAdapterStandardInterface(BaseInterface):
                         yield {"value": row}
 
                 # 判断是否还有更多数据
-                total = result_data.get("count", 0)
-                current_count = page * page_size
-                has_more = current_count < total and len(rows) == page_size
+                # 兼容 totalCount / count / lastPage 等多种分页字段
+                total = result_data.get("count") or result_data.get("totalCount", 0)
+                last_page = result_data.get("lastPage")
+                if last_page is not None:
+                    has_more = not last_page and len(rows) == page_size
+                else:
+                    current_count = page * page_size
+                    has_more = current_count < total and len(rows) == page_size
                 page += 1
 
             except Exception as e:
@@ -535,6 +566,124 @@ class KdCosmicAdapterStandardInterface(BaseInterface):
                 f"Failed to create {object_type}",
                 details={"object_type": object_type, "data": data, "error": str(e)},
             ) from e
+
+    async def execute_api(
+        self,
+        api_path: str,
+        data: dict[str, Any] | None = None,
+        method: str = "POST",
+    ) -> dict[str, Any]:
+        """
+        执行任意 API 接口
+
+        支持直接调用自定义路径的 API，如 /kapi/v2/ju06/ar/ar_finarbill/queryBi
+
+        Args:
+            api_path: API 路径，如 "/kapi/v2/ju06/ar/ar_finarbill/queryBi"
+            data: 请求体数据
+            method: HTTP 方法，默认 POST
+
+        Returns:
+            API 响应中的 data 字段
+
+        Raises:
+            KdCosmicAdapterAPIError: API 调用失败
+        """
+        headers = self._build_request_headers()
+
+        try:
+            if method.upper() == "POST":
+                response = await self.http_client.post(
+                    api_path,
+                    json=data,
+                    headers=headers,
+                )
+            elif method.upper() == "GET":
+                response = await self.http_client.get(
+                    api_path,
+                    params=data,
+                    headers=headers,
+                )
+            else:
+                raise ValueError(f"Unsupported HTTP method: {method}")
+
+            return self._check_response(response)
+
+        except (KdCosmicAdapterAPIError, KdCosmicAdapterAuthError, ValueError):
+            raise
+        except Exception as e:
+            logger.error("execute_api failed for %s: %s", api_path, e)
+            raise KdCosmicAdapterAPIError(
+                f"Failed to execute API {api_path}",
+                details={"api_path": api_path, "error": str(e)},
+            ) from e
+
+    async def invoke(
+        self,
+        method: str,
+        object_type: str,
+        data: dict[str, Any] | None = None,
+        params: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """
+        覆盖基类 invoke，支持自定义 API 路径
+
+        通过 params._api_path 可直接调用任意 API，绕过标准路径构造。
+
+        Args:
+            method: API 方法名
+            object_type: 对象类型
+            data: 请求体数据
+            params: 查询参数，支持：
+                - _api_path: 自定义 API 路径，如 "/kapi/v2/ju06/ar/ar_finarbill/queryBi"
+                - _api_version: API 版本前缀
+                - _operation: 自定义操作类型
+
+        Returns:
+            API 响应数据
+        """
+        params = dict(params) if params else {}
+
+        # 如果指定了 _api_path，直接调用 execute_api
+        api_path = params.pop("_api_path", None)
+        if api_path:
+            http_method = "POST"
+            if method in ("get", "query"):
+                http_method = "POST"
+            elif method in ("create", "save", "update"):
+                http_method = "POST"
+            return await self.execute_api(
+                api_path=api_path,
+                data=data,
+                method=http_method,
+            )
+
+        # 如果指定了 _api_version 或 _operation，传递给 list_objects
+        if method in ("list", "query"):
+            results = []
+            async for item in self.list_objects(
+                object_type, filters=params, page_size=100
+            ):
+                results.append(item)
+            return {"data": results, "total": len(results)}
+
+        if method == "get":
+            object_id = params.get("id")
+            if not object_id:
+                raise ValueError("'get' method requires params['id']")
+            result = await self.get_object(object_type, object_id)
+            return {"data": result}
+
+        if method == "create":
+            if not data:
+                raise ValueError("'create' method requires data")
+            result = await self.create_object(object_type, data)
+            return {"data": result}
+
+        raise NotImplementedError(
+            f"Method '{method}' not implemented. "
+            f"Please use execute_api() for custom API calls."
+        )
 
     async def health_check(self) -> bool:
         """
