@@ -3,76 +3,63 @@ KdCosmicAdapter
 
 适配器主类 - 组合器模式实现
 根据 settings.interface 自动路由到对应的接口实现：
-- "standard": 主接口（默认）
-- "enterprise": 备用接口
+- "standard": 主接口（默认），金蝶云星空旗舰版 OpenAPI
+- "enterprise": 备用接口（预留）
 """
 
 from __future__ import annotations
 
 import logging
 import time
-from typing import Any, AsyncIterator
+from collections.abc import AsyncIterator
+from typing import Any
 
 from qdata_adapter import BaseAppAdapter
 from qdata_adapter.context import ConnectorContext
-from qdata_adapter.exceptions import TestConnectionResult
+from qdata_adapter.results import TestConnectionResult
 
 from qdata_adapter_kd_cosmic.interfaces.base import BaseInterface
 from qdata_adapter_kd_cosmic.interfaces.standard import KdCosmicAdapterStandardInterface
-from qdata_adapter_kd_cosmic.interfaces.enterprise import KdCosmicAdapterEnterpriseInterface
 
 logger = logging.getLogger(__name__)
 
 
 class KdCosmicAdapter(BaseAppAdapter):
     """
-    kd-cosmic 适配器
+    金蝶云星空旗舰版 (kd-cosmic) 适配器
+
     组合器模式，支持多接口切换：
-
     - settings.interface = "standard"（默认）
-      → 使用 KdCosmicAdapterStandardInterface
+      → 使用 KdCosmicAdapterStandardInterface（OpenAPI Accesstoken 认证）
 
-    - settings.interface = "enterprise"
-      → 使用 KdCosmicAdapterEnterpriseInterface
+    认证配置 (auth_config)：
+        {
+            "client_id": "应用 ID",
+            "client_secret": "应用密钥",
+            "username": "用户名",
+            "accountId": "数据中心 ID",
+            "language": "zh_CN",  # 可选，默认 zh_CN
+            "x_acgw_identity": "第三方应用身份标识",  # 可选
+        }
 
-    双接口设计说明：
-
-    某些平台提供多种 API 体系（如标准 REST + 专用网关），本适配器通过组合器
-    模式统一对外接口，内部根据 settings.interface 路由到对应实现。
-
-    开发者可根据实际平台修改：
-    - 接口名称（如 "standard"/"qimen", "openapi"/"custom"）
-    - 接口实现类
-    - 认证方式
-
-    Example:
+    查询示例：
         >>> context = ConnectorContext(
         ...     connector_id="my-connector",
         ...     app_software_code="kd_cosmic",
-        ...     base_url="https://api.example.com",
-        ...     auth_config={"client_id": "xxx", "client_secret": "yyy"},
+        ...     base_url="https://yifanni.kdgalaxy.com",
+        ...     auth_config={...},
         ...     settings={"interface": "standard"},
         ... )
         >>> adapter = KdCosmicAdapter(context)
         >>> result = await adapter.test_connection()
+        >>> async for item in adapter.list_objects("sys.isc_demo_basedata_1"):
+        ...     print(item)
     """
 
     app_code = "kd_cosmic"
     adapter_version = "0.1.0"
 
     def __init__(self, context: ConnectorContext, token_cache: Any = None) -> None:
-        """
-        初始化适配器
-
-        Args:
-            context: 连接器上下文
-            token_cache: Token 缓存（可选）
-
-        Note:
-            context.settings.interface 控制接口路由：
-            - "standard"（默认）
-            - "enterprise"（如启用双接口）
-        """
         super().__init__(context, token_cache)
         self._interface = self._resolve_interface()
         logger.debug(
@@ -81,47 +68,53 @@ class KdCosmicAdapter(BaseAppAdapter):
         )
 
     def _resolve_interface(self) -> BaseInterface:
-        """
-        根据 settings 路由到对应的接口实现
-
-        Returns:
-            接口实现实例
-        """
+        """根据 settings 路由到对应的接口实现"""
         interface_type = self.context.settings.get("interface", "standard")
 
-        if interface_type == "enterprise":
-            logger.debug("Using enterprise interface")
-            return KdCosmicAdapterEnterpriseInterface(
-                self.context, self.http_client
-            )
-        else:
-            # 默认使用主接口
-            if interface_type != "standard":
-                logger.warning(
-                    "Unknown interface '%s', falling back to 'standard'",
-                    interface_type
-                )
+        if interface_type == "standard":
             logger.debug("Using standard interface")
-            return KdCosmicAdapterStandardInterface(
-                self.context, self.http_client
+            return KdCosmicAdapterStandardInterface(self.context, self.http_client)
+        else:
+            logger.warning(
+                "Unknown interface '%s', falling back to 'standard'",
+                interface_type
             )
+            return KdCosmicAdapterStandardInterface(self.context, self.http_client)
+
+    def _apply_token(self, token: dict[str, Any]) -> None:
+        """
+        将 Token 应用到 HTTP 客户端
+
+        金蝶云星空使用自定义请求头 "accesstoken" 而不是标准的 Bearer Token。
+        同时支持 "x-acgw-identity" 身份标识。
+        """
+        access_token = token.get("access_token")
+        if access_token:
+            self.http_client.set_header("accesstoken", access_token)
+            # 同时更新当前接口的 token
+            if hasattr(self._interface, "_token"):
+                self._interface._token = access_token
+
+        auth_config = self.context.auth_config
+        identity = auth_config.get("x_acgw_identity") or auth_config.get("x-acgw-identity", "")
+        if identity:
+            self.http_client.set_header("x-acgw-identity", identity)
 
     async def authenticate(self) -> dict[str, Any]:
-        """
-        获取认证凭证
-
-        委托给当前接口实现
-        """
-        return await self._interface.authenticate()
+        """获取认证凭证"""
+        result = await self._interface.authenticate()
+        # 同步 token 到 http_client
+        self._apply_token(result)
+        return result
 
     async def refresh_token(self) -> dict[str, Any]:
-        """
-        刷新认证凭证
-
-        委托给当前接口实现
-        """
-        # 对于大多数接口，refresh 与 authenticate 相同
-        return await self._interface.authenticate()
+        """刷新认证凭证"""
+        if hasattr(self._interface, "refresh_token"):
+            result = await self._interface.refresh_token()
+        else:
+            result = await self._interface.authenticate()
+        self._apply_token(result)
+        return result
 
     async def list_objects(
         self,
@@ -129,11 +122,8 @@ class KdCosmicAdapter(BaseAppAdapter):
         filters: dict[str, Any] | None = None,
         page_size: int = 100,
     ) -> AsyncIterator[dict[str, Any]]:
-        """
-        列表查询
-
-        委托给当前接口实现
-        """
+        """列表查询"""
+        await self.ensure_authenticated()
         async for item in self._interface.list_objects(object_type, filters, page_size):
             yield item
 
@@ -143,42 +133,57 @@ class KdCosmicAdapter(BaseAppAdapter):
         filters: dict[str, Any] | None = None,
         page_size: int = 100,
     ) -> AsyncIterator[dict[str, Any]]:
-        """
-        查询对象列表（工作流节点优先使用此方法）
-
-        这是 list_objects() 的别名，用于与工作流节点的契约匹配。
-        工作流节点首先查找 query_objects()，其次才是 list_objects()。
-
-        Args:
-            object_type: 对象类型
-            filters: 过滤条件
-            page_size: 每页大小
-
-        Yields:
-            单条记录字典
-
-        Example:
-            >>> async for item in adapter.query_objects("orders", {"status": "pending"}):
-            ...     print(item["id"])
-        """
+        """查询对象列表（工作流节点优先使用此方法）"""
+        await self.ensure_authenticated()
         async for item in self._interface.list_objects(object_type, filters, page_size):
             yield item
 
     async def get_object(self, object_type: str, object_id: str) -> dict[str, Any]:
-        """
-        获取单个对象
-
-        委托给当前接口实现
-        """
+        """获取单个对象"""
+        await self.ensure_authenticated()
         return await self._interface.get_object(object_type, object_id)
 
     async def create_object(self, object_type: str, data: dict[str, Any]) -> dict[str, Any]:
-        """
-        创建对象
-
-        委托给当前接口实现
-        """
+        """创建对象"""
+        await self.ensure_authenticated()
         return await self._interface.create_object(object_type, data)
+
+    async def execute_api(
+        self,
+        api_path: str,
+        data: dict[str, Any] | None = None,
+        method: str = "POST",
+    ) -> dict[str, Any]:
+        """
+        执行任意 API 接口
+
+        支持直接调用金蝶自定义路径的 API，如 /kapi/v2/ju06/ar/ar_finarbill/queryBi
+
+        Args:
+            api_path: API 完整路径，如 "/kapi/v2/ju06/ar/ar_finarbill/queryBi"
+            data: 请求体数据
+            method: HTTP 方法，默认 POST
+
+        Returns:
+            API 响应数据
+
+        Example:
+            >>> result = await adapter.execute_api(
+            ...     api_path="/kapi/v2/ju06/ar/ar_finarbill/queryBi",
+            ...     data={
+            ...         "data": {
+            ...             "auditdate": "2025-01-01 00:00:00",
+            ...             "billtype_number": "arfin_standard_BT_S"
+            ...         },
+            ...         "pageNo": 1,
+            ...         "pageSize": "10"
+            ...     }
+            ... )
+        """
+        await self.ensure_authenticated()
+        if hasattr(self._interface, "execute_api"):
+            return await self._interface.execute_api(api_path, data, method)
+        raise NotImplementedError("execute_api not supported by current interface")
 
     async def invoke(
         self,
@@ -190,57 +195,28 @@ class KdCosmicAdapter(BaseAppAdapter):
         """
         统一的 API 调用方法
 
-        对于拥有成百上千个 API 的平台，此方法提供灵活的统一调用入口。
-        支持任意 API 方法（query/get/create/update/delete 等），
-        而不局限于 list_objects/get_object/create_object 三种操作。
-
-        默认实现会路由到对应的标准方法，子类可以覆盖实现更复杂的逻辑。
+        支持通过 params._api_path 直接调用任意 API，绕过标准路径构造。
 
         Args:
             method: API 方法名，如 "query", "get", "create", "update", "delete"
-            object_type: 对象类型，如 "orders", "products"
+            object_type: 对象类型，如 "sys.pm_purorderbill" 或 "ju06.ar/ar_finarbill"
             data: 请求体数据（用于 create/update 等）
-            params: 查询参数（用于 query/get 等）
+            params: 查询参数（用于 query/get 等），支持：
+                - _api_path: 自定义 API 完整路径
+                - _api_version: API 版本前缀，如 "v2"
+                - _operation: 自定义操作类型，如 "queryBi"
 
         Returns:
             API 响应数据
-
-        Raises:
-            KdCosmicAdapterAuthError: 认证失败
-            KdCosmicAdapterAPIError: API 调用失败
-            NotImplementedError: 方法不支持
-
-        Example:
-            >>> # 查询列表
-            >>> result = await adapter.invoke(
-            ...     "query", "orders",
-            ...     params={"status": "pending"}
-            ... )
-            >>>
-            >>> # 获取单条
-            >>> result = await adapter.invoke(
-            ...     "get", "orders",
-            ...     params={"id": "ORD001"}
-            ... )
-            >>>
-            >>> # 创建对象
-            >>> result = await adapter.invoke(
-            ...     "create", "orders",
-            ...     data={"customer": "张三", "amount": 100}
-            ... )
-            >>>
-            >>> # 调用平台特有 API
-            >>> result = await adapter.invoke(
-            ...     "jky.goods.batchupdateflag",
-            ...     "goods",
-            ...     data={"goods_ids": ["1", "2"], "flag": 1}
-            ... )
         """
-        # 委托给接口实现
-        if hasattr(self._interface, 'invoke'):
+        await self.ensure_authenticated()
+
+        # 如果接口支持 invoke，优先使用
+        if hasattr(self._interface, "invoke"):
             return await self._interface.invoke(method, object_type, data, params)
 
-        # 默认路由到标准方法
+        # 兜底路由
+        params = params or {}
         if method in ("list", "query"):
             results = []
             async for item in self._interface.list_objects(
@@ -249,43 +225,31 @@ class KdCosmicAdapter(BaseAppAdapter):
                 results.append(item)
             return {"data": results, "total": len(results)}
 
-        elif method == "get":
+        if method == "get":
             object_id = params.get("id") if params else None
             if not object_id:
                 raise ValueError("'get' method requires params['id']")
             result = await self._interface.get_object(object_type, object_id)
             return {"data": result}
 
-        elif method == "create":
+        if method == "create":
             if not data:
                 raise ValueError("'create' method requires data")
             result = await self._interface.create_object(object_type, data)
             return {"data": result}
 
-        else:
-            raise NotImplementedError(
-                f"Method '{method}' not implemented in interface. "
-                f"Please override invoke() in your interface class or "
-                f"implement a custom method handler."
-            )
+        raise NotImplementedError(
+            f"Method '{method}' not implemented in interface."
+        )
 
     async def test_connection(self) -> TestConnectionResult:
-        """
-        测试连接
-
-        检查与 kd-cosmic 平台的连接是否正常
-
-        Returns:
-            连接测试结果
-        """
-        import time
-
+        """测试连接"""
         start_time = time.time()
 
         try:
             if await self._interface.health_check():
                 return TestConnectionResult.connected(
-                    message=f"kd-cosmic 连接成功",
+                    message="kd-cosmic 连接成功",
                     duration_ms=int((time.time() - start_time) * 1000),
                     metadata={
                         "interface": self._interface.interface_name,
@@ -300,22 +264,35 @@ class KdCosmicAdapter(BaseAppAdapter):
 
         except Exception as e:
             logger.error("Connection test failed: %s", e)
+            error_msg = str(e)
+            duration_ms = int((time.time() - start_time) * 1000)
+            # 根据异常类型判断错误类别
+            from qdata_adapter.exceptions import AuthenticationError, ResponseError
+
+            from qdata_adapter_kd_cosmic.exceptions import KdCosmicAdapterAuthError
+            if isinstance(e, (AuthenticationError, KdCosmicAdapterAuthError)):
+                return TestConnectionResult.auth_failed(
+                    message=error_msg,
+                    duration_ms=duration_ms,
+                    error_details={"error": error_msg},
+                )
+            if isinstance(e, ResponseError):
+                return TestConnectionResult.network_error(
+                    message=error_msg,
+                    duration_ms=duration_ms,
+                    error_details={"error": error_msg},
+                )
             return TestConnectionResult.network_error(
-                message=str(e),
-                duration_ms=int((time.time() - start_time) * 1000),
-                details={"error": str(e)},
+                message=error_msg,
+                duration_ms=duration_ms,
+                error_details={"error": error_msg},
             )
 
     def get_interface_info(self) -> dict[str, Any]:
-        """
-        获取当前接口信息
-
-        Returns:
-            接口信息字典
-        """
+        """获取当前接口信息"""
         return {
             "interface_name": self._interface.interface_name,
-            "available_interfaces": ["standard", "enterprise"],
+            "available_interfaces": ["standard"],
             "adapter_version": self.adapter_version,
             "app_code": self.app_code,
         }
