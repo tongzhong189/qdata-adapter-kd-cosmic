@@ -1,10 +1,7 @@
 """
 KdCosmicAdapter
 
-适配器主类 - 组合器模式实现
-根据 settings.interface 自动路由到对应的接口实现：
-- "standard": 主接口（默认），金蝶云星空旗舰版 OpenAPI
-- "enterprise": 备用接口（预留）
+适配器主类 - 支持完全自定义 API 调用
 """
 
 from __future__ import annotations
@@ -28,9 +25,10 @@ class KdCosmicAdapter(BaseAppAdapter):
     """
     金蝶云星空旗舰版 (kd-cosmic) 适配器
 
-    组合器模式，支持多接口切换：
-    - settings.interface = "standard"（默认）
-      → 使用 KdCosmicAdapterStandardInterface（OpenAPI Accesstoken 认证）
+    支持完全自定义的 API 调用：
+    - 自定义 API 路径（相对路径，自动拼接 base_url）
+    - 自定义 HTTP 方法（POST/GET/PUT/DELETE）
+    - 自定义请求参数（完全透传，不强制包装）
 
     认证配置 (auth_config)：
         {
@@ -38,26 +36,39 @@ class KdCosmicAdapter(BaseAppAdapter):
             "client_secret": "应用密钥",
             "username": "用户名",
             "accountId": "数据中心 ID",
-            "language": "zh_CN",  # 可选，默认 zh_CN
-            "x_acgw_identity": "第三方应用身份标识",  # 可选
+            "language": "zh_CN",
+            "x_acgw_identity": "第三方应用身份标识",
         }
 
-    查询示例：
+    使用示例：
         >>> context = ConnectorContext(
         ...     connector_id="my-connector",
         ...     app_software_code="kd_cosmic",
         ...     base_url="https://yifanni.kdgalaxy.com",
         ...     auth_config={...},
-        ...     settings={"interface": "standard"},
         ... )
         >>> adapter = KdCosmicAdapter(context)
-        >>> result = await adapter.test_connection()
-        >>> async for item in adapter.list_objects("sys.isc_demo_basedata_1"):
-        ...     print(item)
+        >>>
+        >>> # 方式1: 完全自定义调用
+        >>> result = await adapter.execute_custom_api(
+        ...     path="/v2/null/basedata/bd_material/qeasyadd",
+        ...     method="POST",
+        ...     body={"data": [{"number": "Item-001", "name": "test"}]},
+        ... )
+        >>>
+        >>> # 方式2: 通过 invoke 调用
+        >>> result = await adapter.invoke(
+        ...     "create", "bd_material",
+        ...     data={"data": [{"number": "Item-001"}]},
+        ...     params={
+        ...         "_api_path": "/v2/null/basedata/bd_material/qeasyadd",
+        ...         "_custom_body": True,
+        ...     }
+        ... )
     """
 
     app_code = "kd_cosmic"
-    adapter_version = "0.1.0"
+    adapter_version = "0.2.0"
 
     def __init__(self, context: ConnectorContext, token_cache: Any = None) -> None:
         super().__init__(context, token_cache)
@@ -86,12 +97,10 @@ class KdCosmicAdapter(BaseAppAdapter):
         将 Token 应用到 HTTP 客户端
 
         金蝶云星空使用自定义请求头 "accesstoken" 而不是标准的 Bearer Token。
-        同时支持 "x-acgw-identity" 身份标识。
         """
         access_token = token.get("access_token")
         if access_token:
             self.http_client.set_header("accesstoken", access_token)
-            # 同时更新当前接口的 token
             if hasattr(self._interface, "_token"):
                 self._interface._token = access_token
 
@@ -103,7 +112,6 @@ class KdCosmicAdapter(BaseAppAdapter):
     async def authenticate(self) -> dict[str, Any]:
         """获取认证凭证"""
         result = await self._interface.authenticate()
-        # 同步 token 到 http_client
         self._apply_token(result)
         return result
 
@@ -115,6 +123,10 @@ class KdCosmicAdapter(BaseAppAdapter):
             result = await self._interface.authenticate()
         self._apply_token(result)
         return result
+
+    # -------------------------------------------------------------------------
+    # 标准 CRUD 方法
+    # -------------------------------------------------------------------------
 
     async def list_objects(
         self,
@@ -133,7 +145,7 @@ class KdCosmicAdapter(BaseAppAdapter):
         filters: dict[str, Any] | None = None,
         page_size: int = 100,
     ) -> AsyncIterator[dict[str, Any]]:
-        """查询对象列表（工作流节点优先使用此方法）"""
+        """查询对象列表"""
         await self.ensure_authenticated()
         async for item in self._interface.list_objects(object_type, filters, page_size):
             yield item
@@ -148,42 +160,74 @@ class KdCosmicAdapter(BaseAppAdapter):
         await self.ensure_authenticated()
         return await self._interface.create_object(object_type, data)
 
-    async def execute_api(
+    # -------------------------------------------------------------------------
+    # 自定义 API 方法（核心）
+    # -------------------------------------------------------------------------
+
+    async def raw_request(
         self,
-        api_path: str,
-        data: dict[str, Any] | None = None,
+        path: str,
         method: str = "POST",
+        body: dict[str, Any] | None = None,
+        params: dict[str, Any] | None = None,
+        headers: dict[str, str] | None = None,
     ) -> dict[str, Any]:
         """
-        执行任意 API 接口
+        原始 HTTP 请求
 
-        支持直接调用金蝶自定义路径的 API，如 /kapi/v2/ju06/ar/ar_finarbill/queryBi
+        直接拼接 base_url + path，自动带上认证头，
+        body/params/headers 完全透传，**不做响应状态检查**。
 
         Args:
-            api_path: API 完整路径，如 "/kapi/v2/ju06/ar/ar_finarbill/queryBi"
-            data: 请求体数据
+            path: API 相对路径，如 "/v2/null/basedata/bd_material/qeasyadd"
             method: HTTP 方法，默认 POST
+            body: 请求体，完全透传
+            params: URL 查询参数
+            headers: 额外请求头
 
         Returns:
-            API 响应数据
-
-        Example:
-            >>> result = await adapter.execute_api(
-            ...     api_path="/kapi/v2/ju06/ar/ar_finarbill/queryBi",
-            ...     data={
-            ...         "data": {
-            ...             "auditdate": "2025-01-01 00:00:00",
-            ...             "billtype_number": "arfin_standard_BT_S"
-            ...         },
-            ...         "pageNo": 1,
-            ...         "pageSize": "10"
-            ...     }
-            ... )
+            原始 API 响应字典
         """
         await self.ensure_authenticated()
-        if hasattr(self._interface, "execute_api"):
-            return await self._interface.execute_api(api_path, data, method)
-        raise NotImplementedError("execute_api not supported by current interface")
+        return await self._interface.raw_request(
+            path=path,
+            method=method,
+            body=body,
+            params=params,
+            headers=headers,
+        )
+
+    async def execute_custom_api(
+        self,
+        path: str,
+        method: str = "POST",
+        body: dict[str, Any] | None = None,
+        params: dict[str, Any] | None = None,
+        headers: dict[str, str] | None = None,
+    ) -> dict[str, Any]:
+        """
+        执行自定义 API
+
+        与 raw_request 的区别：会自动检查响应中的 errorCode。
+
+        Args:
+            path: API 相对路径
+            method: HTTP 方法
+            body: 请求体
+            params: URL 查询参数
+            headers: 额外请求头
+
+        Returns:
+            API 响应中的 data 字段
+        """
+        await self.ensure_authenticated()
+        return await self._interface.execute_custom_api(
+            path=path,
+            method=method,
+            body=body,
+            params=params,
+            headers=headers,
+        )
 
     async def invoke(
         self,
@@ -195,52 +239,27 @@ class KdCosmicAdapter(BaseAppAdapter):
         """
         统一的 API 调用方法
 
-        支持通过 params._api_path 直接调用任意 API，绕过标准路径构造。
+        通过 params 中的控制参数实现完全自定义：
+        - _api_path: 自定义 API 相对路径
+        - _http_method: HTTP 方法，如 "POST", "GET", "PUT", "DELETE"
+        - _custom_body: 为 True 时 data 直接作为请求体，不包装
+        - _raw_response: 为 True 时返回原始响应，不做 errorCode 检查
 
         Args:
-            method: API 方法名，如 "query", "get", "create", "update", "delete"
-            object_type: 对象类型，如 "sys.pm_purorderbill" 或 "ju06.ar/ar_finarbill"
-            data: 请求体数据（用于 create/update 等）
-            params: 查询参数（用于 query/get 等），支持：
-                - _api_path: 自定义 API 完整路径
-                - _api_version: API 版本前缀，如 "v2"
-                - _operation: 自定义操作类型，如 "queryBi"
+            method: API 方法名
+            object_type: 对象类型
+            data: 请求体数据
+            params: 查询参数 + 控制参数
 
         Returns:
             API 响应数据
         """
         await self.ensure_authenticated()
+        return await self._interface.invoke(method, object_type, data, params)
 
-        # 如果接口支持 invoke，优先使用
-        if hasattr(self._interface, "invoke"):
-            return await self._interface.invoke(method, object_type, data, params)
-
-        # 兜底路由
-        params = params or {}
-        if method in ("list", "query"):
-            results = []
-            async for item in self._interface.list_objects(
-                object_type, filters=params, page_size=100
-            ):
-                results.append(item)
-            return {"data": results, "total": len(results)}
-
-        if method == "get":
-            object_id = params.get("id") if params else None
-            if not object_id:
-                raise ValueError("'get' method requires params['id']")
-            result = await self._interface.get_object(object_type, object_id)
-            return {"data": result}
-
-        if method == "create":
-            if not data:
-                raise ValueError("'create' method requires data")
-            result = await self._interface.create_object(object_type, data)
-            return {"data": result}
-
-        raise NotImplementedError(
-            f"Method '{method}' not implemented in interface."
-        )
+    # -------------------------------------------------------------------------
+    # 连接测试
+    # -------------------------------------------------------------------------
 
     async def test_connection(self) -> TestConnectionResult:
         """测试连接"""
@@ -266,10 +285,9 @@ class KdCosmicAdapter(BaseAppAdapter):
             logger.error("Connection test failed: %s", e)
             error_msg = str(e)
             duration_ms = int((time.time() - start_time) * 1000)
-            # 根据异常类型判断错误类别
             from qdata_adapter.exceptions import AuthenticationError, ResponseError
-
             from qdata_adapter_kd_cosmic.exceptions import KdCosmicAdapterAuthError
+
             if isinstance(e, (AuthenticationError, KdCosmicAdapterAuthError)):
                 return TestConnectionResult.auth_failed(
                     message=error_msg,

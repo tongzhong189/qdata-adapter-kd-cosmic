@@ -135,6 +135,59 @@ class BaseInterface(ABC):
         """
         pass
 
+    @abstractmethod
+    async def raw_request(
+        self,
+        path: str,
+        method: str = "POST",
+        body: dict[str, Any] | None = None,
+        params: dict[str, Any] | None = None,
+        headers: dict[str, str] | None = None,
+    ) -> dict[str, Any]:
+        """
+        原始 HTTP 请求
+
+        最底层的请求方法，直接拼接 base_url + path，
+        自动带上认证头，body/params/headers 完全透传。
+
+        Args:
+            path: API 相对路径，如 "/v2/null/basedata/bd_material/qeasyadd"
+            method: HTTP 方法，默认 POST
+            body: 请求体，完全透传
+            params: URL 查询参数
+            headers: 额外请求头
+
+        Returns:
+            API 响应数据（已检查 errorCode）
+        """
+        pass
+
+    @abstractmethod
+    async def execute_custom_api(
+        self,
+        path: str,
+        method: str = "POST",
+        body: dict[str, Any] | None = None,
+        params: dict[str, Any] | None = None,
+        headers: dict[str, str] | None = None,
+    ) -> dict[str, Any]:
+        """
+        执行自定义 API
+
+        与 raw_request 类似，但支持通过 settings 配置默认参数。
+
+        Args:
+            path: API 相对路径
+            method: HTTP 方法
+            body: 请求体
+            params: URL 查询参数
+            headers: 额外请求头
+
+        Returns:
+            API 响应数据
+        """
+        pass
+
     async def invoke(
         self,
         method: str,
@@ -143,49 +196,51 @@ class BaseInterface(ABC):
         params: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """
-        统一的 API 调用方法（可选实现）
+        统一的 API 调用方法
 
-        对于拥有成百上千个 API 的平台，为每个 API 实现独立方法不现实。
-        此方法提供统一的调用入口，让适配器灵活处理任意 API 调用。
-
-        默认实现会根据 method 路由到 list_objects/get_object/create_object。
-        子类可以覆盖此方法实现更灵活的调用逻辑。
+        通过 params 中的控制参数实现完全自定义：
+        - _api_path: 自定义 API 相对路径，如 "/v2/null/basedata/bd_material/qeasyadd"
+        - _http_method: HTTP 方法，如 "POST", "GET", "PUT", "DELETE"
+        - _custom_body: 为 True 时 data 直接作为请求体，不包装
+        - _raw_response: 为 True 时返回原始响应，不做 errorCode 检查
 
         Args:
             method: API 方法名，如 "query", "get", "create", "update", "delete"
-            object_type: 对象类型，如 "orders", "products"
-            data: 请求体数据（用于 create/update 等）
-            params: 查询参数（用于 query/get 等）
+            object_type: 对象类型标识
+            data: 请求体数据
+            params: 查询参数 + 控制参数
 
         Returns:
             API 响应数据
-
-        Raises:
-            KdCosmicAdapterAuthError: 认证失败
-            KdCosmicAdapterAPIError: API 调用失败
-            NotImplementedError: 方法不支持
-
-        Example:
-            >>> # 查询列表
-            >>> result = await interface.invoke(
-            ...     "query", "orders",
-            ...     params={"status": "pending", "page": 1}
-            ... )
-            >>>
-            >>> # 获取单条
-            >>> result = await interface.invoke(
-            ...     "get", "orders", params={"id": "ORD001"}
-            ... )
-            >>>
-            >>> # 创建对象
-            >>> result = await interface.invoke(
-            ...     "create", "orders",
-            ...     data={"customer": "张三", "amount": 100}
-            ... )
         """
+        params = dict(params) if params else {}
+
+        # 提取控制参数
+        api_path = params.pop("_api_path", None)
+        http_method = params.pop("_http_method", "POST")
+        custom_body = params.pop("_custom_body", False)
+        raw_response = params.pop("_raw_response", False)
+
+        # 如果指定了自定义路径，使用 execute_custom_api
+        if api_path:
+            body = data if custom_body else ({"data": data} if data is not None else None)
+            if raw_response:
+                # 绕过响应检查，直接返回原始响应
+                return await self.raw_request(
+                    path=api_path,
+                    method=http_method,
+                    body=body,
+                    params=params if params else None,
+                )
+            return await self.execute_custom_api(
+                path=api_path,
+                method=http_method,
+                body=body,
+                params=params if params else None,
+            )
+
         # 默认路由到标准方法
         if method in ("list", "query"):
-            # 收集所有结果到列表返回
             results = []
             async for item in self.list_objects(object_type, filters=params, page_size=100):
                 results.append(item)
@@ -207,7 +262,7 @@ class BaseInterface(ABC):
         else:
             raise NotImplementedError(
                 f"Method '{method}' not implemented. "
-                f"Please override invoke() in your interface class."
+                f"Please use params['_api_path'] for custom API calls."
             )
 
     def get_auth_config(self) -> dict[str, Any]:
