@@ -30,7 +30,7 @@ class TestKdCosmicAdapter:
         adapter = KdCosmicAdapter(standard_context, mock_token_cache)
 
         assert adapter.app_code == "kd_cosmic"
-        assert adapter.adapter_version == "0.1.0"
+        assert adapter.adapter_version == "0.2.0"
         assert adapter.context == standard_context
 
     @pytest.mark.asyncio
@@ -45,7 +45,7 @@ class TestKdCosmicAdapter:
 
         assert info["interface_name"] == "standard"
         assert "standard" in info["available_interfaces"]
-        assert info["adapter_version"] == "0.1.0"
+        assert info["adapter_version"] == "0.2.0"
         assert info["app_code"] == "kd_cosmic"
 
     # -------------------------------------------------------------------------
