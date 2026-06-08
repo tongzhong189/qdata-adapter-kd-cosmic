@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "qdata-adapter-kd-cosmic"
-version = "0.1.0"
+version = "0.1.1"
 description = "QDataV2 adapter for kd-cosmic"
 readme = "README.md"
 license = {text = "MIT"}
